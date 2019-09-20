@@ -63,3 +63,5 @@ INSERT INTO Minions (Id, [Name], Age, TownId) VALUES
  Go
 
  DROP TABLE Minions
+ DROP TABLE Towns
+ 
