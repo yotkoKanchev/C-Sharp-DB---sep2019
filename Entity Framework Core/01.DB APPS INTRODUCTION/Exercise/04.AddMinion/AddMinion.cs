@@ -19,14 +19,16 @@
             using (var connection = new SqlConnection(connectionString))
             {
                 connection.Open();
+
                 var transaction = connection.BeginTransaction();
                 var command = new SqlCommand();
+
                 command.Transaction = transaction;
+                command.Connection = connection;
                 command.Parameters.AddWithValue("@minionName", minionName);
                 command.Parameters.AddWithValue("@minionAge", minionAge);
                 command.Parameters.AddWithValue("@townName", townName);
                 command.Parameters.AddWithValue("@villainName", villainName);
-                command.Connection = connection;
 
                 try
                 {
@@ -62,29 +64,28 @@
                     var villainId = GetId(command, villainQuery);
                     command.Parameters.AddWithValue("@villainId", villainId);
 
-
                     var minionIdQuery = @"SELECT Id 
                                             FROM Minions 
                                            WHERE Name = @minionName AND Age = @minionAge";
 
                     if (GetId(command, minionIdQuery) == null)
                     {
-                        var minionQuery = $"INSERT INTO Minions (Name, Age, TownId) " +
-                            $"                   VALUES (@minionName, @minionAge, @townId)";
+                        var minionQuery = @"INSERT INTO Minions (Name, Age, TownId)
+                                                 VALUES (@minionName, @minionAge, @townId)";
                         InsertData(command, minionQuery);
                     }
 
                     var minionId = GetId(command, minionIdQuery);
                     command.Parameters.AddWithValue("@minionId", minionId);
 
-                    var villainMinionExistsQuery = $@"SELECT TOP(1)     
+                    var villainMinionExistsQuery = @"SELECT TOP(1)     
                                                             FROM MinionsVillains
                                                            WHERE MinionId = @minionId AND VillainId = @villainId";
 
                     if (command.ExecuteScalar() == null)
                     {
-                        var minionsVillainsQuery = $"INSERT INTO MinionsVillains (MinionId, VillainId) " +
-                            $"                            VALUES (@minionId, @villainId)";
+                        var minionsVillainsQuery = @"INSERT INTO MinionsVillains (MinionId, VillainId) 
+                                                          VALUES (@minionId, @villainId)";
 
                         InsertData(command, minionsVillainsQuery);
                         Console.WriteLine($"Successfully added {minionName} to be minion of {villainName}.");
@@ -126,8 +127,7 @@
             using (command)
             {
                 command.CommandText = query;
-                var id = command.ExecuteScalar();
-                return id;
+                return command.ExecuteScalar();
             }
         }
     }

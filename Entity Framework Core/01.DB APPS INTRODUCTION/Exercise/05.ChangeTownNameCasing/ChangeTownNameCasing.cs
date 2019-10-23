@@ -12,12 +12,11 @@
 
             var connectionString = @"Server=YOTO\SQLEXPRESS;Database=MinionsDB;Integrated Security=true";
 
-            var connection = new SqlConnection(connectionString);
 
-            connection.Open();
-
-            using (connection)
+            using (var connection = new SqlConnection(connectionString))
             {
+                connection.Open();
+
                 var command = new SqlCommand();
                 command.Connection = connection;
                 command.Parameters.AddWithValue("@countryName", countryName);
@@ -60,9 +59,8 @@
 
                 Console.WriteLine($"[{string.Join(", ", towns)}]");
             }
-            
-        }
 
+        }
         private static int UpdateTowns(SqlCommand command)
         {
             var query = @"UPDATE Towns

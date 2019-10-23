@@ -26,6 +26,7 @@
                     var villainNameQuery = @"SELECT Name 
                                                FROM Villains 
                                               WHERE Id = @villainId";
+
                     var villainName = GetName(command, villainNameQuery);
 
                     if (villainName == null)
