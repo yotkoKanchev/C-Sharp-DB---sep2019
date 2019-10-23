@@ -10,7 +10,7 @@
         {
             var countryName = Console.ReadLine();
 
-            string connectionString = @"Server=YOTO\SQLEXPRESS;Database=MinionsDB;Integrated Security=true";
+            var connectionString = @"Server=YOTO\SQLEXPRESS;Database=MinionsDB;Integrated Security=true";
 
             var connection = new SqlConnection(connectionString);
 
