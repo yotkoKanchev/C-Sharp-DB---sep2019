@@ -67,7 +67,9 @@
         {
             var query = @"UPDATE Towns
                                  SET Name = UPPER(Name)
-                               WHERE CountryCode = (SELECT Id FROM Countries WHERE Name = @countryName)";
+                               WHERE CountryCode = (SELECT Id 
+                                                      FROM Countries 
+                                                     WHERE Name = @countryName)";
             using (command)
             {
                 command.CommandText = query;

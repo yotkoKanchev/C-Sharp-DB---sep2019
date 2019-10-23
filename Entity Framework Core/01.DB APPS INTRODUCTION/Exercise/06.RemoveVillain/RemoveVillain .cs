@@ -23,7 +23,9 @@
 
                 try
                 {
-                    var villainNameQuery = @"SELECT Name FROM Villains WHERE Id = @villainId";
+                    var villainNameQuery = @"SELECT Name 
+                                               FROM Villains 
+                                              WHERE Id = @villainId";
                     var villainName = GetName(command, villainNameQuery);
 
                     if (villainName == null)
@@ -32,10 +34,16 @@
                         return;
                     }
 
-                    var minionsVillainsQuery = @"DELETE FROM MinionsVillains WHERE VillainId = @villainId";
+                    var minionsVillainsQuery = @"DELETE 
+                                                   FROM MinionsVillains 
+                                                  WHERE VillainId = @villainId";
+
                     var releasedMinionsCount = DeleteRecords(command, minionsVillainsQuery);
 
-                    var villainQuery = @"DELETE FROM Villains WHERE Id = @villainId";
+                    var villainQuery = @"DELETE 
+                                           FROM Villains 
+                                          WHERE Id = @villainId";
+
                     DeleteRecords(command, villainQuery);
 
                     Console.WriteLine($"{(string)villainName} was deleted.");

@@ -30,11 +30,15 @@
 
                 try
                 {
-                    var townQuery = @"SELECT Id FROM Towns WHERE Name = @townName";
+                    var townQuery = @"SELECT Id 
+                                        FROM Towns 
+                                       WHERE Name = @townName";
 
                     if (GetId(command, townQuery) == null)
                     {
-                        var insertTownQuery = @"INSERT INTO Towns (Name) VALUES (@townName)";
+                        var insertTownQuery = @"INSERT INTO Towns (Name) 
+                                                VALUES (@townName)";
+
                         InsertData(command, insertTownQuery);
                         Console.WriteLine($"{townName} was added to the database.");
                     }
@@ -42,11 +46,15 @@
                     var townId = GetId(command, townQuery);
                     command.Parameters.AddWithValue("@townId", townId);
 
-                    var villainQuery = @"SELECT Id FROM Villains WHERE Name = @villainName";
+                    var villainQuery = @"SELECT Id 
+                                           FROM Villains 
+                                          WHERE Name = @villainName";
 
                     if (GetId(command, villainQuery) == null)
                     {
-                        var insertVillainQuery = @"INSERT INTO Villains (Name) VALUES (@villainName)";
+                        var insertVillainQuery = @"INSERT INTO Villains (Name) 
+                                                   VALUES (@villainName)";
+
                         InsertData(command, insertVillainQuery);
                         Console.WriteLine($"Villain {villainName} was added to the database.");
                     }
@@ -55,10 +63,14 @@
                     command.Parameters.AddWithValue("@villainId", villainId);
 
 
-                    var minionIdQuery = @"SELECT Id FROM Minions WHERE Name = @minionName AND Age = @minionAge";
+                    var minionIdQuery = @"SELECT Id 
+                                            FROM Minions 
+                                           WHERE Name = @minionName AND Age = @minionAge";
+
                     if (GetId(command, minionIdQuery) == null)
                     {
-                        var minionQuery = $"INSERT INTO Minions (Name, Age, TownId) VALUES (@minionName, @minionAge, @townId)";
+                        var minionQuery = $"INSERT INTO Minions (Name, Age, TownId) " +
+                            $"                   VALUES (@minionName, @minionAge, @townId)";
                         InsertData(command, minionQuery);
                     }
 
@@ -71,7 +83,9 @@
 
                     if (command.ExecuteScalar() == null)
                     {
-                        var minionsVillainsQuery = $"INSERT INTO MinionsVillains (MinionId, VillainId) VALUES (@minionId, @villainId)";
+                        var minionsVillainsQuery = $"INSERT INTO MinionsVillains (MinionId, VillainId) " +
+                            $"                            VALUES (@minionId, @villainId)";
+
                         InsertData(command, minionsVillainsQuery);
                         Console.WriteLine($"Successfully added {minionName} to be minion of {villainName}.");
                     }
