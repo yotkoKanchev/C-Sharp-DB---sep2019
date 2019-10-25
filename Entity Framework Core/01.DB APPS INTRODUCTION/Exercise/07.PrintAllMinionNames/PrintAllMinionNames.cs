@@ -15,8 +15,7 @@
                 connection.Open();
                 var query = @"SELECT Name 
                                 FROM Minions";
-                var command = new SqlCommand(query);
-                command.Connection = connection;
+                var command = new SqlCommand(query, connection);
                 var reader = command.ExecuteReader();
                 var names = new List<string>();
 
