@@ -1,7 +1,7 @@
-﻿using MiniORM.App.Data.Entities;
-
-namespace MiniORM.App.Data
+﻿namespace MiniORM.App.Data
 {
+    using Entities;
+
     public class SoftUniDbContext : DbContext
     {
         public SoftUniDbContext(string connectionString)
@@ -15,6 +15,6 @@ namespace MiniORM.App.Data
 
         public DbSet<Project> Projects { get; }
 
-        public DbSet<EmployeeProject> GetEmployeesProjects { get; }
+        public DbSet<EmployeeProject> EmployeesProjects { get; }
     }
 }

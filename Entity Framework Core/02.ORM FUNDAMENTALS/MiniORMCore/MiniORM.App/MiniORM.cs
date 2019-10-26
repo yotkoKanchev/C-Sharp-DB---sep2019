@@ -1,14 +1,14 @@
 ﻿namespace MiniORM.App
 {
+    using System.Linq;
     using Data;
     using Data.Entities;
-    using System.Linq;
 
-    public class MiniORM
+    public class StartUp
     {
-        public static void Main()
+        public static void Main(string[] args)
         {
-            var connectionString = @"Server=YOTO\SQLEXPRESS;Database=MiniORM;Integrated Security=true";
+            var connectionString = @"Server=.\SQLEXPRESS;Database=MiniORM;Integrated Security=True";
 
             var context = new SoftUniDbContext(connectionString);
 
@@ -17,7 +17,7 @@
                 FirstName = "Gosho",
                 LastName = "Inserted",
                 DepartmentId = context.Departments.First().Id,
-                IsEmployed = true
+                IsEmployed = true,
             });
 
             var employee = context.Employees.Last();

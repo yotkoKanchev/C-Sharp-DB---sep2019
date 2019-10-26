@@ -22,8 +22,8 @@
         [ForeignKey(nameof(Department))]
         public int DepartmentId { get; set; }
 
-        public Department Depatment { get; set; }
+        public Department Department { get; set; }
 
-        public ICollection<EmployeeProject> EmployeeProject { get; }
+        public ICollection<EmployeeProject> EmployeeProjects { get; }
     }
 }

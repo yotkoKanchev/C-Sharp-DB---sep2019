@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace MiniORM
+﻿namespace MiniORM
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public class DbSet<TEntity> : ICollection<TEntity>
         where TEntity : class, new()
     {
-        public DbSet(IEnumerable<TEntity> entities)
+        internal DbSet(IEnumerable<TEntity> entities)
         {
             this.Entities = entities.ToList();
+
             this.ChangeTracker = new ChangeTracker<TEntity>(entities);
         }
 
@@ -26,6 +27,7 @@ namespace MiniORM
             }
 
             this.Entities.Add(item);
+
             this.ChangeTracker.Add(item);
         }
 
@@ -33,20 +35,14 @@ namespace MiniORM
         {
             while (this.Entities.Any())
             {
-                TEntity entity = this.Entities.First();
+                var entity = this.Entities.First();
                 this.Remove(entity);
             }
         }
 
-        public bool Contains(TEntity item)
-        {
-            return this.Entities.Contains(item);
-        }
+        public bool Contains(TEntity item) => this.Entities.Contains(item);
 
-        public void CopyTo(TEntity[] array, int arrayIndex)
-        {
-            this.Entities.CopyTo(array, arrayIndex);
-        }
+        public void CopyTo(TEntity[] array, int arrayIndex) => this.Entities.CopyTo(array, arrayIndex);
 
         public int Count => this.Entities.Count;
 
@@ -59,14 +55,24 @@ namespace MiniORM
                 throw new ArgumentNullException(nameof(item), "item cannot be null!");
             }
 
-            bool removedsuccessfully = this.Entities.Remove(item);
+            var removedSuccessfully = this.Entities.Remove(item);
 
-            if (removedsuccessfully)
+            if (removedSuccessfully)
             {
                 this.ChangeTracker.Remove(item);
             }
 
-            return removedsuccessfully;
+            return removedSuccessfully;
+        }
+
+        public IEnumerator<TEntity> GetEnumerator()
+        {
+            return this.Entities.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
 
         public void RemoveRange(IEnumerable<TEntity> entities)
@@ -75,15 +81,6 @@ namespace MiniORM
             {
                 this.Remove(entity);
             }
-        }
-
-        public IEnumerator<TEntity> GetEnumerator()
-        {
-            return this.Entities.GetEnumerator();
-        }
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
         }
     }
 }
