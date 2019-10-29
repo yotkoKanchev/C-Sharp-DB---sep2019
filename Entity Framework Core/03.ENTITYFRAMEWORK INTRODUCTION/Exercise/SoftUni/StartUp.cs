@@ -1,6 +1,7 @@
 ﻿namespace SoftUni
 {
     using System;
+    using System.Globalization;
     using System.Linq;
     using System.Text;
     using SoftUni.Data;
@@ -10,12 +11,14 @@
     {
         public static void Main()
         {
-            var context = new SoftUniContext();
-
-            //Console.WriteLine(GetEmployeesFullInformation(context));
-            //Console.WriteLine(GetEmployeesWithSalaryOver50000(context));
-            //Console.WriteLine(GetEmployeesFromResearchAndDevelopment(context));
-            Console.WriteLine(AddNewAddressToEmployee(context));
+            using (var context = new SoftUniContext())
+            {
+                //Console.WriteLine(GetEmployeesFullInformation(context));
+                //Console.WriteLine(GetEmployeesWithSalaryOver50000(context));
+                //Console.WriteLine(GetEmployeesFromResearchAndDevelopment(context));
+                //Console.WriteLine(AddNewAddressToEmployee(context));
+                Console.WriteLine(GetEmployeesInPeriod(context));
+            }
         }
 
         public static string GetEmployeesFullInformation(SoftUniContext context)
@@ -112,6 +115,50 @@
             foreach (var employee in employees)
             {
                 sb.AppendLine(employee.AddressText);
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+
+        public static string GetEmployeesInPeriod(SoftUniContext context)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            var employees = context.Employees
+                .Where(e => e.EmployeesProjects
+                    .Any(p => p.Project.StartDate.Year >= 2001 && p.Project.StartDate.Year <= 2003))
+                .Take(10)
+                .Select(e => new
+                {
+                    e.FirstName,
+                    e.LastName,
+                    MFirstName = e.Manager.FirstName,
+                    MLastName = e.Manager.LastName,
+                    Projects = e.EmployeesProjects
+                    .Select(p => new
+                    {
+                        p.Project.Name,
+                        p.Project.StartDate,
+                        p.Project.EndDate
+                    })
+                });
+
+            string format = "M/d/yyyy h:mm:ss tt";
+
+            foreach (var employee in employees)
+            {
+                sb.AppendLine($"{employee.FirstName} {employee.LastName} - Manager: {employee.MFirstName} {employee.MLastName}");
+
+                foreach (var project in employee.Projects)
+                {
+                    string startDate = project.StartDate.ToString(format, CultureInfo.InvariantCulture);
+
+                    string endDate = project.EndDate == null
+                                                        ? "not finished"
+                                                        : project.EndDate.Value.ToString(format, CultureInfo.InvariantCulture);                        
+
+                    sb.AppendLine($"--{project.Name} - {startDate} - {endDate}");
+                }
             }
 
             return sb.ToString().TrimEnd();
