@@ -249,14 +249,15 @@
                     ManagerFirstName = d.Manager.FirstName,
                     ManagerLastName = d.Manager.LastName,
                     Employees = d.Employees
+					.OrderBy(e => e.EmployeeFirstName)
+                    .ThenBy(e => e.EmployeeLastName)
                                 .Select(e => new
                                 {
                                     EmployeeFirstName = e.FirstName,
                                     EmployeeLastName = e.LastName,
                                     JobTitle = e.JobTitle
                                 })
-                                .OrderBy(e => e.EmployeeFirstName)
-                                .ThenBy(e => e.EmployeeLastName)
+                                
                 })
                 .ToList();
 
