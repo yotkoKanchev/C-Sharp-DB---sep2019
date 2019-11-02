@@ -52,8 +52,6 @@ namespace P03_SalesDatabase.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Description");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)

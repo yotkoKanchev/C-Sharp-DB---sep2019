@@ -31,8 +31,7 @@ namespace P03_SalesDatabase.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 50, nullable: false),
                     Quantity = table.Column<double>(nullable: false),
-                    Price = table.Column<decimal>(nullable: false),
-                    Description = table.Column<string>(nullable: true)
+                    Price = table.Column<decimal>(nullable: false)                   
                 },
                 constraints: table =>
                 {
