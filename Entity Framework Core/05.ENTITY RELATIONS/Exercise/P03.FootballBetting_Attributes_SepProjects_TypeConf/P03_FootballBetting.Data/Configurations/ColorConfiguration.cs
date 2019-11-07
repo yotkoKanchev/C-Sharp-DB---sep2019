@@ -2,21 +2,12 @@
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using P03_FootballBetting.Data.Models;
-    using static DataValidations;
-
+    using Data.Models;
     public class ColorConfiguration : IEntityTypeConfiguration<Color>
     {
         public void Configure(EntityTypeBuilder<Color> entity)
         {
-            entity
-                 .HasKey(e => e.ColorId);
-
-            entity
-                .Property(e => e.Name)
-                .HasMaxLength(ColorMaxNameLength)
-                .IsRequired(true)
-                .IsUnicode(true);
+            // don't realy need this one when using data annotations
         }
     }
 }

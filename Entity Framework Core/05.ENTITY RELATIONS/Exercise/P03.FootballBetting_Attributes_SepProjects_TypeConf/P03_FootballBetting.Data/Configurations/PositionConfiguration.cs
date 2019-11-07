@@ -2,21 +2,13 @@
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using P03_FootballBetting.Data.Models;
-    using static DataValidations;
+    using Data.Models;
 
     public class PositionConfiguration : IEntityTypeConfiguration<Position>
     {
         public void Configure(EntityTypeBuilder<Position> entity)
         {
-            entity
-                 .HasKey(e => e.PositionId);
-
-            entity
-                .Property(e => e.Name)
-                .HasMaxLength(PositionMaxNameLength)
-                .IsRequired(true)
-                .IsUnicode(true);
+            // don't realy need that one when using data annotations 
         }
     }
 }

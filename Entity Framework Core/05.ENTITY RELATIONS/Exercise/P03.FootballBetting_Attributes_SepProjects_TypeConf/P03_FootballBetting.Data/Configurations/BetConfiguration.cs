@@ -2,26 +2,11 @@
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using P03_FootballBetting.Data.Models;
+    using Data.Models;
     public class BetConfiguration : IEntityTypeConfiguration<Bet>
     {
         public void Configure(EntityTypeBuilder<Bet> entity)
         {
-            entity
-                .HasKey(e => e.BetId);
-
-            entity
-                .Property(e => e.Amount)
-                .IsRequired();
-
-            entity
-                .Property(e => e.Prediction)
-                .IsRequired();
-
-            entity
-                .Property(e => e.DateTime)
-                .IsRequired();
-
             entity
                 .HasOne(b => b.User)
                 .WithMany(u => u.Bets)

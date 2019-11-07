@@ -2,7 +2,7 @@
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using P03_FootballBetting.Data.Models;
+    using Data.Models;
 
     public class PlayerStatisticConfiguration : IEntityTypeConfiguration<PlayerStatistic>
     {
@@ -13,18 +13,6 @@
 
             entity
                 .ToTable("PlayerStatistics");
-
-            entity
-                .Property(e => e.ScoredGoals)
-                .IsRequired(true);
-
-            entity
-                .Property(e => e.Assists)
-                .IsRequired(true);
-
-            entity
-                .Property(e => e.MinutesPlayed)
-                .IsRequired(true);
 
             entity
                 .HasOne(ps => ps.Game)

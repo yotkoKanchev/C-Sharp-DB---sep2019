@@ -9,37 +9,6 @@
         public void Configure(EntityTypeBuilder<Game> entity)
         {
             entity
-                .HasKey(e => e.GameId);
-
-            entity
-                .Property(e => e.HomeTeamGoals)
-                .IsRequired();
-
-            entity
-                .Property(e => e.AwayTeamGoals)
-                .IsRequired();
-
-            entity
-                .Property(e => e.DateTime)
-                .IsRequired();
-
-            entity
-                .Property(e => e.HomeTeamBetRate)
-                .IsRequired();
-
-            entity
-                .Property(e => e.DrawBetRate)
-                .IsRequired();
-
-            entity
-                .Property(e => e.AwayTeamBetRate)
-                .IsRequired();
-
-            entity
-                .Property(e => e.Result)
-                .IsRequired();
-
-            entity
                 .HasOne(g => g.HomeTeam)
                 .WithMany(ht => ht.HomeGames)
                 .HasForeignKey(g => g.HomeTeamId)

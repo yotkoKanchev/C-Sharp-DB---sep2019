@@ -2,37 +2,11 @@
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using P03_FootballBetting.Data.Models;
-    using static DataValidations;
+    using Data.Models;
     public class TeamConfiguration : IEntityTypeConfiguration<Team>
     {
         public void Configure(EntityTypeBuilder<Team> entity)
         {
-            entity
-                    .HasKey(e => e.TeamId);
-
-            entity
-                .Property(e => e.Name)
-                .HasMaxLength(TeamMaxNameLength)
-                .IsRequired(true)
-                .IsUnicode(true);
-
-            entity
-                .Property(e => e.LogoUrl)
-                .HasMaxLength(LogoUrlMaxLength)
-                .IsRequired(false)
-                .IsUnicode(true);
-
-            entity
-                .Property(e => e.Initials)
-                .HasMaxLength(InitialsUrlMaxLength)
-                .IsRequired(false)
-                .IsUnicode(true);
-
-            entity
-                .Property(e => e.Budget)
-                .IsRequired(true);
-
             entity
                 .HasOne(t => t.Town)
                 .WithMany(to => to.Teams)

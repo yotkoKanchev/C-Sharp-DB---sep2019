@@ -2,31 +2,12 @@
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using P03_FootballBetting.Data.Models;
-    using static DataValidations;
+    using Data.Models;
 
     public class PlayerConfiguration : IEntityTypeConfiguration<Player>
     {
         public void Configure(EntityTypeBuilder<Player> entity)
         {
-            entity
-                 .HasKey(e => e.PlayerId);
-
-            entity
-                .Property(e => e.Name)
-                .HasMaxLength(PlayerMaxNameLength)
-                .IsRequired(true)
-                .IsUnicode(true);
-
-            entity
-                .Property(e => e.SquadNumber)
-                .IsRequired(true);
-
-            entity
-                .Property(e => e.IsInjured)
-                .IsRequired(true)
-                .HasDefaultValue(false);
-
             entity
                 .HasOne(p => p.Team)
                 .WithMany(t => t.Players)

@@ -10,7 +10,7 @@ using P03_FootballBetting.Data;
 namespace P03_FootballBetting.Data.Migrations
 {
     [DbContext(typeof(FootballBettingContext))]
-    [Migration("20191106130407_Initial")]
+    [Migration("20191107114431_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,8 +54,7 @@ namespace P03_FootballBetting.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .IsUnicode(true);
+                        .HasMaxLength(20);
 
                     b.HasKey("ColorId");
 
@@ -70,8 +69,7 @@ namespace P03_FootballBetting.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .IsUnicode(true);
+                        .HasMaxLength(30);
 
                     b.HasKey("CountryId");
 
@@ -118,14 +116,11 @@ namespace P03_FootballBetting.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<bool>("IsInjured")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(false);
+                    b.Property<bool>("IsInjured");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .IsUnicode(true);
+                        .HasMaxLength(100);
 
                     b.Property<int>("PositionId");
 
@@ -171,8 +166,7 @@ namespace P03_FootballBetting.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .IsUnicode(true);
+                        .HasMaxLength(20);
 
                     b.HasKey("PositionId");
 
@@ -188,17 +182,14 @@ namespace P03_FootballBetting.Data.Migrations
                     b.Property<decimal>("Budget");
 
                     b.Property<string>("Initials")
-                        .HasMaxLength(5)
-                        .IsUnicode(true);
+                        .HasMaxLength(5);
 
                     b.Property<string>("LogoUrl")
-                        .HasMaxLength(1000)
-                        .IsUnicode(true);
+                        .HasMaxLength(1000);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(true);
+                        .HasMaxLength(50);
 
                     b.Property<int>("PrimaryKitColorId");
 
@@ -227,8 +218,7 @@ namespace P03_FootballBetting.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(true);
+                        .HasMaxLength(50);
 
                     b.HasKey("TownId");
 
@@ -246,14 +236,12 @@ namespace P03_FootballBetting.Data.Migrations
                     b.Property<decimal>("Balance");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .IsUnicode(false);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .IsUnicode(true);
+                        .HasMaxLength(100);
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -262,13 +250,14 @@ namespace P03_FootballBetting.Data.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasMaxLength(100)
+                        .HasMaxLength(30)
                         .IsUnicode(false);
 
                     b.HasKey("UserId");
 
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.HasIndex("Username")
                         .IsUnique();

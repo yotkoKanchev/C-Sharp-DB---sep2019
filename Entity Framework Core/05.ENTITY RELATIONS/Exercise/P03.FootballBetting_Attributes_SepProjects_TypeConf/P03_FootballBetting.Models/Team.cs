@@ -1,17 +1,25 @@
 ﻿namespace P03_FootballBetting.Data.Models
 {
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
 
+    using static DataValidations.Team;
     public class Team
     {
+        [Key]
         public int TeamId { get; set; }
 
+        [Required]
+        [MaxLength(NameMaxLength)]
         public string Name { get; set; }
 
+        [MaxLength(LogoUrlMaxLength)]
         public string LogoUrl { get; set; }
 
+        [MaxLength(InitialsUrlMaxLength)]
         public string Initials { get; set; }
 
+        [Required]
         public decimal Budget { get; set; }
 
         public int PrimaryKitColorId { get; set; } 

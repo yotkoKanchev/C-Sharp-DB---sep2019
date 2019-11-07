@@ -53,9 +53,9 @@ namespace P03_FootballBetting.Data.Migrations
                 {
                     UserId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Username = table.Column<string>(unicode: false, maxLength: 100, nullable: false),
+                    Username = table.Column<string>(unicode: false, maxLength: 30, nullable: false),
                     Password = table.Column<string>(unicode: false, maxLength: 30, nullable: false),
-                    Email = table.Column<string>(unicode: false, maxLength: 100, nullable: false),
+                    Email = table.Column<string>(unicode: false, maxLength: 100, nullable: true),
                     Name = table.Column<string>(maxLength: 100, nullable: false),
                     Balance = table.Column<decimal>(nullable: false)
                 },
@@ -127,15 +127,15 @@ namespace P03_FootballBetting.Data.Migrations
                 {
                     GameId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    HomeTeamId = table.Column<int>(nullable: false),
-                    AwayTeamId = table.Column<int>(nullable: false),
                     HomeTeamGoals = table.Column<int>(nullable: false),
                     AwayTeamGoals = table.Column<int>(nullable: false),
                     DateTime = table.Column<DateTime>(nullable: false),
                     HomeTeamBetRate = table.Column<double>(nullable: false),
                     AwayTeamBetRate = table.Column<double>(nullable: false),
                     DrawBetRate = table.Column<double>(nullable: false),
-                    Result = table.Column<string>(nullable: false)
+                    Result = table.Column<string>(nullable: false),
+                    HomeTeamId = table.Column<int>(nullable: false),
+                    AwayTeamId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -162,7 +162,7 @@ namespace P03_FootballBetting.Data.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 100, nullable: false),
                     SquadNumber = table.Column<int>(nullable: false),
-                    IsInjured = table.Column<bool>(nullable: false, defaultValue: false),
+                    IsInjured = table.Column<bool>(nullable: false),
                     TeamId = table.Column<int>(nullable: false),
                     PositionId = table.Column<int>(nullable: false)
                 },
@@ -299,7 +299,8 @@ namespace P03_FootballBetting.Data.Migrations
                 name: "IX_Users_Email",
                 table: "Users",
                 column: "Email",
-                unique: true);
+                unique: true,
+                filter: "[Email] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Username",
