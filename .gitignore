@@ -51,6 +51,7 @@ BenchmarkDotNet.Artifacts/
 # .NET Core
 project.lock.json
 project.fragment.lock.json
+appsettings.json
 artifacts/
 **/Properties/launchSettings.json
 
@@ -58,6 +59,7 @@ artifacts/
 StyleCopReport.xml
 
 # Files built by Visual Studio
+
 *_i.c
 *_p.c
 *_i.h
