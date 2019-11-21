@@ -41,7 +41,7 @@
                 //Console.WriteLine(GetProductsInRange(db));
                 //Console.WriteLine(GetSoldProducts(db));
                 //Console.WriteLine(GetCategoriesByProductsCount(db));
-                Console.WriteLine(GetUsersWithProducts(db));
+                //Console.WriteLine(GetUsersWithProducts(db));
             }
         }
 
@@ -97,7 +97,9 @@
                 importCategoryDtos = (ImportCategoryDto[])serializer.Deserialize(reader);
             }
 
-            var categories = Mapper.Map<Category[]>(importCategoryDtos).Where(c => c.Name != null).ToArray();
+            var categories = Mapper.Map<Category[]>(importCategoryDtos)
+                                  .Where(c => c.Name != null)
+                                  .ToArray();
 
             context.Categories.AddRange(categories);
             var importedCategoryRecordsCount = context.SaveChanges();
@@ -108,8 +110,13 @@
         //04. Import Categories and Products
         public static string ImportCategoryProducts(ProductShopContext context, string inputXml)
         {
-            var validCategoryIds = context.Categories.Select(c => c.Id).ToArray();
-            var validProductIds = context.Products.Select(p => p.Id).ToArray();
+            var validCategoryIds = context.Categories
+                .Select(c => c.Id)
+                .ToArray();
+
+            var validProductIds = context.Products
+                .Select(p => p.Id)
+                .ToArray();
 
             var serializer = new XmlSerializer(typeof(ImportCategoryProductDto[]), new XmlRootAttribute("CategoryProducts"));
 
@@ -137,7 +144,8 @@
             var sb = new StringBuilder();
 
             var exportProductInRangeDtos = context.Products
-                .Where(p => p.Price >= 500 && p.Price <= 1000)
+                .Where(p => p.Price >= 500 && 
+                            p.Price <= 1000)
                 .OrderBy(p => p.Price)
                 .Take(10)
                 .ProjectTo<ExportProductInRangeDto>()
@@ -203,14 +211,16 @@
         //08. Export Users and Products
         public static string GetUsersWithProducts(ProductShopContext context)
         {
+            var sb = new StringBuilder();
+
             var users = context.Users
                 .Where(u => u.ProductsSold.Any());
 
             var filteredUsers = users
-            .ProjectTo<UserDetailsDto>()
-            .OrderByDescending(u => u.SoldProducts.Count)
-            .Take(10)
-            .ToArray();
+                .ProjectTo<UserDetailsDto>()
+                .OrderByDescending(u => u.SoldProducts.Count)
+                .Take(10)
+                .ToArray();
 
             var userInfoDto = Mapper.Map<UserInfoDto>(filteredUsers);
 
@@ -218,7 +228,6 @@
 
             var serializer = new XmlSerializer(typeof(UserInfoDto), new XmlRootAttribute("Users"));
             var ns = new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty });
-            var sb = new StringBuilder();
 
             using (var writer = new StringWriter(sb))
             {
