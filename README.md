@@ -1,5 +1,5 @@
-# SoftUni - C# DB sep2019
-Resources including :
+## SoftUni - C# DB sep2019
+# Resources including :
   Presentations
   Lab documents
   Exercise documents
