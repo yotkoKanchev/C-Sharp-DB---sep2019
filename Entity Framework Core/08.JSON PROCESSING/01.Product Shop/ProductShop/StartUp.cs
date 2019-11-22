@@ -1,9 +1,10 @@
 ﻿namespace ProductShop
 {
-    using Newtonsoft.Json;
+    using System;
+    using System.Linq;
     using ProductShop.Data;
     using ProductShop.Models;
-    using System.Linq;
+    using Newtonsoft.Json;
 
     public class StartUp
     {
@@ -27,7 +28,7 @@
                 //Console.WriteLine(ImportCategoryProducts(db, categoriesProducts));
 
                 //Console.WriteLine(GetProductsInRange(db));
-                //Console.WriteLine(GetSoldProducts(db));
+                Console.WriteLine(GetSoldProducts(db));
                 //Console.WriteLine(GetCategoriesByProductsCount(db));
                 //Console.WriteLine(GetUsersWithProducts(db));
             }
