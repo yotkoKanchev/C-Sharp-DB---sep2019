@@ -19,7 +19,7 @@
     {
         public static string ImportGames(VaporStoreDbContext context, string jsonString)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             var games = new List<Game>();
             var developers = new HashSet<Developer>();
             var genres = new HashSet<Genre>();
