@@ -37,7 +37,7 @@
                     gameDto.Tags.Any();
 
                 if (gameDtoIsValid == false)
-                {
+                {                 // create constant here              
                     sb.AppendLine("Invalid Data");
                     continue;
                 }
@@ -77,7 +77,7 @@
                 };
 
                 games.Add(game);
-
+                                        //create constant here !!!
                 sb.AppendLine($"Added {gameDto.Name} ({gameDto.Genre}) with {gameDto.Tags.Length} tags");
             }
 
