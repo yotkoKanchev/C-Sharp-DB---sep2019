@@ -7,7 +7,7 @@
 
     public class Purchase
     {
-        [Key, Required]
+        [Key, Required] 
         public int Id { get; set; }
 
         [Required]
