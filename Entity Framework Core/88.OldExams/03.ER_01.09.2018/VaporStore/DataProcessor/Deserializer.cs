@@ -44,7 +44,7 @@
                         : new Developer { Name = gameDto.Developer, };
 
                 var genre = genres.Any(g => g.Name == gameDto.Genre)
-                        ? genres.Single(g => g.Name == gameDto.Genre)
+                        ? genres.First(g => g.Name == gameDto.Genre)
                         : new Genre { Name = gameDto.Genre, };
 
                 developers.Add(developer);
