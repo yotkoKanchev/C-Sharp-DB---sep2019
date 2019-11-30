@@ -5,7 +5,6 @@
     using System.Linq;
     using System.Text;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
 
     using Data;
     using ImportDtos;
@@ -13,7 +12,6 @@
 
     using Newtonsoft.Json;
 
-    using ValidationContext = System.ComponentModel.DataAnnotations.ValidationContext;
 
     public static class Deserializer
     {
@@ -95,14 +93,6 @@
         public static string ImportPurchases(VaporStoreDbContext context, string xmlString)
         {
             return null;
-        }
-
-        private static bool IsValid(object dto)
-        {
-            var validationContext = new ValidationContext(dto);
-            var validationResult = new List<ValidationResult>();
-
-            return Validator.TryValidateObject(dto, validationContext, validationResult, true);
         }
     }
 }
