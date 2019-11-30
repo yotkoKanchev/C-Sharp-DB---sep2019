@@ -1,16 +1,19 @@
 ﻿namespace VaporStore.DataProcessor
 {
     using System;
-    using System.Linq;
-    using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Text;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+
     using Data;
     using ImportDtos;
     using Data.Models;
+
     using Newtonsoft.Json;
+
     using ValidationContext = System.ComponentModel.DataAnnotations.ValidationContext;
-    using System.ComponentModel.DataAnnotations;
 
     public static class Deserializer
     {
