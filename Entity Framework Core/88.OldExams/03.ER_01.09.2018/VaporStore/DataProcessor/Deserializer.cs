@@ -43,12 +43,11 @@
                         ? developers.First(d => d.Name == gameDto.Developer)
                         : new Developer { Name = gameDto.Developer, };
 
-                developers.Add(developer);
-
                 var genre = genres.Any(g => g.Name == gameDto.Genre)
                         ? genres.Single(g => g.Name == gameDto.Genre)
                         : new Genre { Name = gameDto.Genre, };
 
+                developers.Add(developer);
                 genres.Add(genre);
 
                 var currentTags = new List<Tag>();
