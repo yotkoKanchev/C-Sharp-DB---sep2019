@@ -1,10 +1,14 @@
 ﻿namespace VaporStore.DataProcessor
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using Data;
     using Newtonsoft.Json;
+    using System;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using System.Xml;
+    using System.Xml.Serialization;
     using VaporStore.DataProcessor.ExportDtos;
 
     public static class Serializer
@@ -20,28 +24,67 @@
                     Id = g.Id,
                     Genre = g.Name,
                     Games = g.Games
-                    .Where(x => x.Purchases.Any())
-                    .Select(x => new ExportGameDto
-                    {
-                        Id = x.Id,
-                        Developer = x.Developer.Name,
-                        Title = x.Name,
-                        Tags = string.Join(", ", x.GameTags.Select(z => z.Tag.Name).ToArray()),
-                        Players = x.Purchases.Count
+                        .Where(x => x.Purchases.Any())
+                        .Select(x => new ExportGameDto
+                        {
+                            Id = x.Id,
+                            Developer = x.Developer.Name,
+                            Title = x.Name,
+                            Tags = string.Join(", ", x.GameTags.Select(z => z.Tag.Name).ToArray()),
+                            Players = x.Purchases.Count
 
-                    })
-                    .OrderByDescending(y => y.Players)
-                    .ThenBy(y => y.Id)
-                    .ToArray(),
+                        })
+                        .OrderByDescending(y => y.Players)
+                        .ThenBy(y => y.Id)
+                        .ToArray(),
                     TotalPlayers = g.Games.Sum(z => z.Purchases.Count)
                 });
 
-            return JsonConvert.SerializeObject(exportGenreDtos, Formatting.Indented);
+            return JsonConvert.SerializeObject(exportGenreDtos, Newtonsoft.Json.Formatting.Indented);
         }
 
         public static string ExportUserPurchasesByType(VaporStoreDbContext context, string storeType)
         {
-            return null;
+            var sb = new StringBuilder();
+
+            var exportUserDtos = context.Users
+                .Select(u => new ExportUserDto
+                {
+                    Username = u.Username,
+                    Purchases = u.Cards.SelectMany(c => c.Purchases)
+                    .Where(c => c.Type.ToString() == storeType)
+                    .Select(c => new ExportPurchaseDto
+                    {
+                        Cvc = c.Card.Cvc,
+                        Date = c.Date.ToString(@"yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture),
+                        Card = c.Card.Number,
+                        Game = new GameDto
+                        {
+                            Title = c.Game.Name,
+                            Genre = c.Game.Genre.Name,
+                            Price = c.Game.Price
+                        }
+                    })
+                    .OrderBy(p => p.Date)
+                    .ToArray(),
+                    TotalSpent = u.Cards.SelectMany(c => c.Purchases)
+                    .Where(p => p.Type.ToString() == storeType)
+                    .Sum(p => p.Game.Price)
+                })
+                .Where(p => p.Purchases.Any())
+                .OrderByDescending(u => u.TotalSpent)
+                .ThenBy(u => u.Username)
+                .ToArray();
+
+            var serializer = new XmlSerializer(typeof(ExportUserDto[]), new XmlRootAttribute("Users"));
+            var ns = new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty });
+
+            using (var writer = new StringWriter(sb))
+            {
+                serializer.Serialize(writer, exportUserDtos, ns);
+            }
+
+            return sb.ToString().TrimEnd();
         }
     }
 }
