@@ -8,10 +8,8 @@
         [XmlAttribute("username")]
         public string Username { get; set; }
 
-        [XmlArray]
         public ExportPurchaseDto[] Purchases { get; set; }
 
-        [XmlElement]
         public decimal TotalSpent { get; set; }
     }
 }
