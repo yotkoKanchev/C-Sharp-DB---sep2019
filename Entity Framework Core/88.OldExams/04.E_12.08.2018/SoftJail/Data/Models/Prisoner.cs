@@ -17,6 +17,7 @@
         [Range(18, 65)]
         public int Age { get; set; }
 
+        [Required]
         public DateTime IncarcerationDate { get; set; }
 
         public DateTime? ReleaseDate { get; set; }
