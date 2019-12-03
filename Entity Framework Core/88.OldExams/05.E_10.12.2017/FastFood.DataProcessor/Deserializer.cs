@@ -149,8 +149,7 @@
                     });
                 }
 
-                sb.AppendLine($"Order for {order.Customer} on {order.DateTime
-                    .ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)} added");
+                sb.AppendLine($"Order for {order.Customer} on {order.DateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)} added");
                 orders.Add(order);
             }
 
