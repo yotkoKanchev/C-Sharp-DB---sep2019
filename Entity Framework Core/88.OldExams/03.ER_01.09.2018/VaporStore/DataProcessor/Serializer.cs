@@ -45,52 +45,49 @@
         }
 
         public static string ExportUserPurchasesByType(VaporStoreDbContext context, string storeType)
-        {                       // DOESN'T WORK IN Judge !!!
-            var purchaseType = Enum.Parse<PurchaseType>(storeType);
+        {
+                                        // DOESN'T WORK IN Judge !!!
             var sb = new StringBuilder();
+            var purchaseType = Enum.Parse<PurchaseType>(storeType);
 
-            var purchases = context.Users
-                .Where(u => u.Cards.SelectMany(c => c.Purchases).Any()) /* may not be the correct place ?!?*/
-                .Select(u => new ExportUserDto
+            var users = context
+                .Users
+                .Select(x => new UserExportDto
                 {
-                    Username = u.Username,
-                    Purchases = u.Cards
-                        .SelectMany(c => c.Purchases)
-                        .Where(p => p.Type == purchaseType)
-                        .Select(p => new ExportPurchaseDto
+                    Username = x.Username,
+                    Purchases = x.Cards
+                        .SelectMany(p => p.Purchases)
+                        .Where(t => t.Type == purchaseType)
+                        .Select(p => new PurchaseExportDto
                         {
                             Card = p.Card.Number,
                             Cvc = p.Card.Cvc,
                             Date = p.Date.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture),
-                            Game = new GameDto
+                            Game = new GameExportDto
                             {
-                                Title = p.Game.Name,
                                 Genre = p.Game.Genre.Name,
+                                Title = p.Game.Name,
                                 Price = p.Game.Price,
                             }
                         })
-                        .OrderBy(p => p.Date)
+                        .OrderBy(d => d.Date)
                         .ToArray(),
-                    TotalSpent = u.Cards
-                        .SelectMany(c => c.Purchases)
-                        .Where(p => p.Type == purchaseType)
+                    TotalSpent = x.Cards
+                        .SelectMany(p => p.Purchases)
+                        .Where(t => t.Type == purchaseType)
                         .Sum(p => p.Game.Price)
                 })
-                //.Where(u => u.Purchases.Any())
-                .OrderByDescending(u => u.TotalSpent)
+                .Where(p => p.Purchases.Any())
+                .OrderByDescending(t => t.TotalSpent)
                 .ThenBy(u => u.Username)
                 .ToArray();
 
-            var serializer = new XmlSerializer(typeof(ExportUserDto[]), new XmlRootAttribute("Users"));
+            var xmlSerializer = new XmlSerializer(typeof(UserExportDto[]), new XmlRootAttribute("Users"));
 
-            var ns = new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty });
+            var namespaces = new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty });
+            xmlSerializer.Serialize(new StringWriter(sb), users, namespaces);
 
-            using (var writer = new StringWriter(sb))
-            {
-                serializer.Serialize(writer, purchases, ns);
-            }
-
-           return sb.ToString().TrimEnd();
+            return sb.ToString().TrimEnd();
         }
     }
 }

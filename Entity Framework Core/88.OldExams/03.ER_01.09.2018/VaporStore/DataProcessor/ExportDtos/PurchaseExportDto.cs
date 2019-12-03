@@ -3,14 +3,18 @@
     using System.Xml.Serialization;
 
     [XmlType("Purchase")]
-    public class ExportPurchaseDto
+    public class PurchaseExportDto
     {
+        [XmlElement]
         public string Card { get; set; }
 
+        [XmlElement]
         public string Cvc { get; set; }
 
+        [XmlElement]
         public string Date { get; set; }
 
-        public GameDto Game { get; set; }
+        [XmlElement]
+        public GameExportDto Game { get; set; }
     }
 }

@@ -3,13 +3,15 @@
     using System.Xml.Serialization;
 
     [XmlType("User")]
-    public class ExportUserDto
+    public class UserExportDto
     {
         [XmlAttribute("username")]
         public string Username { get; set; }
 
-        public ExportPurchaseDto[] Purchases { get; set; }
+        [XmlArray]
+        public PurchaseExportDto[] Purchases { get; set; }
 
+        [XmlElement]
         public decimal TotalSpent { get; set; }
     }
 }
