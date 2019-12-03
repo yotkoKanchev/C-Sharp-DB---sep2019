@@ -3,11 +3,15 @@
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.Globalization;
+    using System.IO;
     using System.Linq;
     using System.Text;
+    using System.Xml.Serialization;
     using FastFood.Data;
     using FastFood.DataProcessor.Dto.Import;
     using FastFood.Models;
+    using FastFood.Models.Enums;
     using Newtonsoft.Json;
 
     public static class Deserializer
@@ -98,8 +102,63 @@
 
         public static string ImportOrders(FastFoodDbContext context, string xmlString)
         {
-            return null;
+            var sb = new StringBuilder();
+            var employees = context.Employees.ToList();
+            var employeeNames = employees.Select(e => e.Name).ToList();
+            var items = context.Items.ToList();
+            var itemNames = items.Select(i => i.Name).ToList();
 
+            var orders = new List<Order>();
+            var orderItems = new List<OrderItem>();
+
+            var serializer = new XmlSerializer(typeof(ImportOrderDto[]), new XmlRootAttribute("Orders"));
+            ImportOrderDto[] importOrderDtos;
+
+            using (var reader = new StringReader(xmlString))
+            {
+                importOrderDtos = (ImportOrderDto[])serializer.Deserialize(reader);
+            }
+
+            foreach (var orderDto in importOrderDtos)
+            {
+                var itemsExists = orderDto.Items.Select(i => i.Name).ToList().All(n => itemNames.Contains(n));
+
+                if (!IsValid(orderDto) ||
+                    !employeeNames.Contains(orderDto.Employee) ||
+                    !itemsExists)
+                {
+                    sb.AppendLine(FailureMessage);
+                    continue;
+                }
+
+                var order = new Order
+                {
+                    Customer = orderDto.Customer,
+                    DateTime = DateTime.ParseExact(orderDto.DateTime, "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture),
+                    Employee = employees.First(e => e.Name == orderDto.Employee),
+                    Type = (OrderType)Enum.Parse(typeof(OrderType), orderDto.Type),
+                };
+
+                foreach (var item in orderDto.Items)
+                {
+                    orderItems.Add(new OrderItem
+                    {
+                        Order = order,
+                        Item = items.First(i => i.Name == item.Name),
+                        Quantity = item.Quantity,
+                    });
+                }
+
+                sb.AppendLine($"Order for {order.Customer} on {order.DateTime
+                    .ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)} added");
+                orders.Add(order);
+            }
+
+            context.Orders.AddRange(orders);
+            context.OrderItems.AddRange(orderItems);
+            context.SaveChanges();
+
+            return sb.ToString().TrimEnd();
         }
 
         private static bool IsValid(object dto)
