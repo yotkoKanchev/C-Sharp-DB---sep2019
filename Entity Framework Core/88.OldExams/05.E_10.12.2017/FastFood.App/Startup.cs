@@ -15,20 +15,20 @@ namespace FastFood.App
 		{
 			var context = new FastFoodDbContext();
 
-			ResetDatabase(context);
+			//ResetDatabase(context);
 
-			Console.WriteLine("Database Reset.");
+			//Console.WriteLine("Database Reset.");
 
-			Mapper.Initialize(cfg => cfg.AddProfile<FastFoodProfile>());
+			//Mapper.Initialize(cfg => cfg.AddProfile<FastFoodProfile>());
 
 			ImportEntities(context);
 
-			ExportEntities(context);
+			//ExportEntities(context);
 
-			BonusTask(context);
+			//BonusTask(context);
 		}
 
-		private static void ImportEntities(FastFoodDbContext context, string baseDir = @"..\Datasets\")
+		private static void ImportEntities(FastFoodDbContext context, string baseDir = @"..\..\..\..\Datasets\")
 		{
 			const string exportDir = "./ImportResults/";
 

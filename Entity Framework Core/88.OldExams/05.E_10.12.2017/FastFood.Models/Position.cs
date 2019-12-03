@@ -7,7 +7,7 @@
     {
         public int Id { get; set; }
 
-        [MinLength(3), MaxLength(30), Required] // TODO needs to be unique !!!
+        [MinLength(3), MaxLength(30), Required] 
         public string Name { get; set; }
 
         public ICollection<Employee> Employees { get; set; } = new HashSet<Employee>();
