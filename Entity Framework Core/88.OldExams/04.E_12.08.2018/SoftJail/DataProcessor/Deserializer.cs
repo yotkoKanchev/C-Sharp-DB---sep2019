@@ -162,7 +162,6 @@
                     Weapon = Enum.Parse<Weapon>(officerDto.Weapon),
                     DepartmentId = officerDto.DepartmentId,
                     OfficerPrisoners = currPrisoners.Select(cp => new OfficerPrisoner { Prisoner = cp }).ToList(),
-                    //OfficerPrisoners = officerDto.Prisoners.Select(positionIsValid )
                 };
 
                 sb.AppendLine($"Imported {officer.FullName} ({officer.OfficerPrisoners.Count} prisoners)");
