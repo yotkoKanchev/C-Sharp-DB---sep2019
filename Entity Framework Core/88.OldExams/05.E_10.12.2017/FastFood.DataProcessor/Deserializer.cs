@@ -26,11 +26,9 @@
 
             foreach (var employeeDto in importEmployeeDtos)
             {
-
                 var employeeDtoIsValid = IsValid(employeeDto);
-                var positionDtoIsValid = IsValid(employeeDto.Position);
 
-                if (!employeeDtoIsValid || !positionDtoIsValid)
+                if (!employeeDtoIsValid)
                 {
                     sb.AppendLine(FailureMessage);
                     continue;
@@ -61,8 +59,41 @@
 
         public static string ImportItems(FastFoodDbContext context, string jsonString)
         {
-            return null;
+            var sb = new StringBuilder();
+            var items = new List<Item>();
+            var categories = new HashSet<Category>();
 
+            var importItemsDto = JsonConvert.DeserializeObject<ImportItemDto[]>(jsonString);
+
+            foreach (var itemDto in importItemsDto)
+            {
+                if (!IsValid(itemDto) || items.Any(i => i.Name == itemDto.Name))
+                {
+                    sb.AppendLine(FailureMessage);
+                    continue;
+                }
+
+                var category = categories.Any(c => c.Name == itemDto.Category)
+                    ? categories.First(c => c.Name == itemDto.Category)
+                    : new Category { Name = itemDto.Category };
+
+                categories.Add(category);
+
+                var item = new Item
+                {
+                    Name = itemDto.Name,
+                    Price = itemDto.Price,
+                    Category = category,
+                };
+
+                sb.AppendLine(String.Format(SuccessMessage, item.Name));
+                items.Add(item);
+            }
+
+            context.Items.AddRange(items);
+            context.SaveChanges();
+
+            return sb.ToString().TrimEnd();
         }
 
         public static string ImportOrders(FastFoodDbContext context, string xmlString)

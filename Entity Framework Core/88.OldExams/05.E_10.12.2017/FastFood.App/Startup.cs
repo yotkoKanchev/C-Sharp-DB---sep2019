@@ -15,27 +15,27 @@ namespace FastFood.App
 		{
 			var context = new FastFoodDbContext();
 
-			//ResetDatabase(context);
+            ResetDatabase(context);
 
-			//Console.WriteLine("Database Reset.");
+            Console.WriteLine("Database Reset.");
 
-			//Mapper.Initialize(cfg => cfg.AddProfile<FastFoodProfile>());
+            //Mapper.Initialize(cfg => cfg.AddProfile<FastFoodProfile>());
 
-			ImportEntities(context);
+            ImportEntities(context);
 
 			//ExportEntities(context);
 
 			//BonusTask(context);
-		}
+		}             
 
 		private static void ImportEntities(FastFoodDbContext context, string baseDir = @"..\..\..\..\Datasets\")
 		{
-			const string exportDir = "./ImportResults/";
+			const string exportDir = "../../../ImportResults/";
 
-			var employees = DataProcessor.Deserializer.ImportEmployees(context, File.ReadAllText(baseDir + "employees.json"));
-			PrintAndExportEntityToFile(employees, exportDir + "Employees.txt");
+            var employees = DataProcessor.Deserializer.ImportEmployees(context, File.ReadAllText(baseDir + "employees.json"));
+            PrintAndExportEntityToFile(employees, exportDir + "Employees.txt");
 
-			var items = DataProcessor.Deserializer.ImportItems(context, File.ReadAllText(baseDir + "items.json"));
+            var items = DataProcessor.Deserializer.ImportItems(context, File.ReadAllText(baseDir + "items.json"));
 			PrintAndExportEntityToFile(items, exportDir + "Items.txt");
 
 			var orders = DataProcessor.Deserializer.ImportOrders(context, File.ReadAllText(baseDir + "orders.xml"));
