@@ -8,7 +8,22 @@
     {
         public static string ReleasePrisoner(SoftJailDbContext context, int prisonerId)
         {
-           throw new NotImplementedException();
+            var prisoner = context.Prisoners
+                .Find(prisonerId);
+            var releaseDate = prisoner.ReleaseDate;
+            prisoner.ReleaseDate = DateTime.UtcNow;
+            prisoner.CellId = null;
+
+            var result = $"Prisoner {prisoner.FullName} released";
+
+            if (releaseDate == null)
+            {
+                result = $"Prisoner { prisoner.FullName} is sentenced to life";
+            }
+
+            context.SaveChanges();
+
+            return result;
         }
     }
 }
