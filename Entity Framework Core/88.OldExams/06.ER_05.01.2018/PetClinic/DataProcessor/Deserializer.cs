@@ -1,5 +1,7 @@
 ﻿namespace PetClinic.DataProcessor
 {
+    using System;
+    using System.Globalization;
     using System.Linq;
     using System.Text;
     using System.Collections.Generic;
@@ -44,8 +46,49 @@
 
         public static string ImportAnimals(PetClinicContext context, string jsonString)
         {
-            return null;
+            var sb = new StringBuilder();
+            var animals = new List<Animal>();
+            var passports = new HashSet<Passport>();
 
+            var importAnimalDtos = JsonConvert.DeserializeObject<ImportAnimalDto[]>(jsonString);
+
+            foreach (var dto in importAnimalDtos)
+            {
+                if (!IsValid(dto) || !IsValid(dto.Passport) ||
+                    animals.Any(a => a.PassportSerialNumber == dto.Passport.SerialNumber))
+                {
+                    sb.AppendLine(ErrorMessage);
+                    continue;
+                }
+
+                var passport = passports.Any(p => p.SerialNumber == dto.Passport.SerialNumber)
+                    ? passports.First(p => p.SerialNumber == dto.Passport.SerialNumber)
+                    : new Passport
+                    {
+                        SerialNumber = dto.Passport.SerialNumber,
+                        OwnerName = dto.Passport.OwnerName,
+                        OwnerPhoneNumber = dto.Passport.OwnerPhoneNumber,
+                        RegistrationDate = DateTime.ParseExact(dto.Passport.RegistrationDate, @"dd-MM-yyyy", CultureInfo.InvariantCulture),
+                    };
+
+                passports.Add(passport);
+
+                var animal = new Animal
+                {
+                    Name = dto.Name,
+                    Age = dto.Age,
+                    Type = dto.Type,
+                    Passport = passport,
+                    PassportSerialNumber = dto.Passport.SerialNumber
+                };
+
+                sb.AppendLine($"Record {animal.Name} Passport №: {passport.SerialNumber} successfully imported.");
+                animals.Add(animal);
+            }
+
+            context.Animals.AddRange(animals);
+            context.SaveChanges();
+            return sb.ToString().TrimEnd();
         }
 
         public static string ImportVets(PetClinicContext context, string xmlString)
