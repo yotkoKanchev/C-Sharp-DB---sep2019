@@ -1,17 +1,16 @@
 ﻿namespace SoftJail.DataProcessor
 {
 
-    using Data;
-    using Newtonsoft.Json;
-    using SoftJail.DataProcessor.ExportDto;
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Text;
     using System.Xml;
     using System.Xml.Serialization;
+    using Data;
+    using ExportDto;
+    using Newtonsoft.Json;
 
     public class Serializer
     {
