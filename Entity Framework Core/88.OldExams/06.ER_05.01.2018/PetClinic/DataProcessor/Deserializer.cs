@@ -10,6 +10,8 @@
     using DataProcessor.ImportDtos;
     using Models;
     using Newtonsoft.Json;
+    using System.Xml.Serialization;
+    using System.IO;
 
     public class Deserializer
     {
@@ -93,7 +95,41 @@
 
         public static string ImportVets(PetClinicContext context, string xmlString)
         {
-            return null;
+            var vets = new List<Vet>();
+            var sb = new StringBuilder();
+            var serializer = new XmlSerializer(typeof(ImportVetDto[]), new XmlRootAttribute("Vets"));
+
+            ImportVetDto[] importVetDtos;
+
+            using (var reader = new StringReader(xmlString))
+            {
+                importVetDtos = (ImportVetDto[])serializer.Deserialize(reader);
+            }
+
+            foreach (var dto in importVetDtos)
+            {
+                if (!IsValid(dto) || vets.Any(v =>v.PhoneNumber == dto.PhoneNumber))
+                {
+                    sb.AppendLine(ErrorMessage);
+                    continue;
+                }
+
+                var vet = new Vet
+                {
+                    Name = dto.Name,
+                    Profession = dto.Profession,
+                    Age = dto.Age,
+                    PhoneNumber = dto.PhoneNumber,
+                };
+
+                sb.AppendLine($"Record {vet.Name} successfully imported.");
+                vets.Add(vet);
+            }
+
+            context.Vets.AddRange(vets);
+            context.SaveChanges();
+
+            return sb.ToString().TrimEnd();
 
         }
 

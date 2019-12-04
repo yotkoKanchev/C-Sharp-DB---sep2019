@@ -35,8 +35,8 @@
             string animals = DataProcessor.Deserializer.ImportAnimals(context, File.ReadAllText(baseDir + "animals.json"));
             PrintAndExportEntityToFile(animals, exportDir + "AnimalsImport.txt");
 
-            //string vets = DataProcessor.Deserializer.ImportVets(context, File.ReadAllText(baseDir + "vets.xml"));
-            //PrintAndExportEntityToFile(vets, exportDir + "VetsImport.txt");
+            string vets = DataProcessor.Deserializer.ImportVets(context, File.ReadAllText(baseDir + "vets.xml"));
+            PrintAndExportEntityToFile(vets, exportDir + "VetsImport.txt");
 
             //var procedures = DataProcessor.Deserializer.ImportProcedures(context, File.ReadAllText(baseDir + "procedures.xml"));
             //PrintAndExportEntityToFile(procedures, exportDir + "ProceduresImport.txt");
