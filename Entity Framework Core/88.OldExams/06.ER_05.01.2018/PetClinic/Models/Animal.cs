@@ -17,7 +17,7 @@
         [Range(1, int.MaxValue)]
         public int Age { get; set; }
 
-        [ForeignKey(nameof(Passport))]
+        [ForeignKey(nameof(Passport))] //one to one realation FK
         public string PassportSerialNumber { get; set; }
 
         public Passport Passport { get; set; }

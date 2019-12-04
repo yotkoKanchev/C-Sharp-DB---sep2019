@@ -2,6 +2,7 @@
 {
     public class ProcedureAnimalAid
     {
+        //PK configured on PetClinicContext.cs
         public int ProcedureId { get; set; }
         public Procedure Procedure { get; set; }
 

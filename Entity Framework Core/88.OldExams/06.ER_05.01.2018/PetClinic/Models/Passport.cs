@@ -9,7 +9,7 @@
         [RegularExpression(@"^[A-Za-z]{7}[0-9]{3}$"), Required]
         public string SerialNumber { get; set; }
 
-        [Required]
+        [Required] //one to one ralation property
         public Animal Animal { get; set; }
 
         [RegularExpression(@"^((\+359)|(0))[0-9]{9}$"), Required]

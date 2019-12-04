@@ -16,7 +16,7 @@
         [Range(22, 65)]
         public int Age { get; set; }
 
-        //needs to be unique
+        //needs to be unique - EFC fluent API
         [RegularExpression(@"^((\+359)|(0))[0-9]{9}$"), Required]
         public string PhoneNumber { get; set; }
 

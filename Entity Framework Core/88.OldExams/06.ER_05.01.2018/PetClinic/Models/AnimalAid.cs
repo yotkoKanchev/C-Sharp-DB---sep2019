@@ -7,7 +7,7 @@
     {
         public int Id { get; set; }
 
-        //needs to be unique
+        //needs to be unique - EFC fluent API
         [MinLength(3), MaxLength(30), Required]
         public string Name { get; set; }
 

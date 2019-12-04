@@ -17,7 +17,7 @@
 
         public ICollection<ProcedureAnimalAid> ProcedureAnimalAids { get; set; } = new HashSet<ProcedureAnimalAid>();
 
-        [NotMapped]
+        [NotMapped] //getter only
         public decimal Cost => this.ProcedureAnimalAids.Sum(paa => paa.Procedure.Cost);
 
         public DateTime DateTime { get; set; }
