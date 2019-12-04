@@ -21,7 +21,7 @@
 
                 ExportEntities(context);
 
-                //BonusTask(context);
+                BonusTask(context);
             }
         }
 

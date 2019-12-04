@@ -1,15 +1,14 @@
 ﻿namespace PetClinic.DataProcessor
 {
-    using System;
-    using System.Globalization;
     using System.IO;
-    using System.Linq;
     using System.Text;
+    using System.Linq;
+    using System.Globalization;
     using System.Xml;
     using System.Xml.Serialization;
-    using Newtonsoft.Json;
     using PetClinic.Data;
     using PetClinic.DataProcessor.ExportDtos;
+    using Newtonsoft.Json;
 
     public class Serializer
     {
@@ -49,7 +48,7 @@
                         Name = paa.AnimalAid.Name,
                         Price = paa.AnimalAid.Price
                     }).ToArray(),
-                     TotalPrice = p.ProcedureAnimalAids.Sum(paa => paa.AnimalAid.Price)
+                    TotalPrice = p.ProcedureAnimalAids.Sum(paa => paa.AnimalAid.Price)
                 })
                 .ToArray();
 
