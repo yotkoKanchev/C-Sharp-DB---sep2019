@@ -3,7 +3,11 @@
     using System;
     using System.IO;
     using System.Linq;
+    using System.Text;
+    using System.Xml;
+    using System.Xml.Serialization;
     using FastFood.Data;
+    using FastFood.DataProcessor.Dto.Export;
     using Newtonsoft.Json;
 
     public class Serializer
@@ -34,14 +38,41 @@
                 }).First();
 
 
-            return JsonConvert.SerializeObject(employee, Formatting.Indented);
-
+            return JsonConvert.SerializeObject(employee, Newtonsoft.Json.Formatting.Indented);
         }
 
         public static string ExportCategoryStatistics(FastFoodDbContext context, string categoriesString)
         {
-            return null;
+            var categories = categoriesString.Split(",", StringSplitOptions.RemoveEmptyEntries);
 
+            var filteredCategories = context.Categories
+                .Where(c => categories.Contains(c.Name))
+                .Select(c => new ExportCategoryDto
+                {
+                    Name = c.Name,
+                    MostPopularItem = c.Items.Select(i => new MostPopularItemDto
+                    {
+                        Name = i.Name,
+                        TimesSold = i.OrderItems.Sum(oi => oi.Quantity),
+                        TotalMade = i.OrderItems.Sum(oi => oi.Quantity * oi.Item.Price)
+                    })
+                    .OrderByDescending(i => i.TotalMade)
+                    .First()
+                })
+                .OrderByDescending(o => o.MostPopularItem.TotalMade)
+                .ThenByDescending(o => o.MostPopularItem.TimesSold)
+                .ToArray();
+
+            var serializer = new XmlSerializer(typeof(ExportCategoryDto[]), new XmlRootAttribute("Categories"));
+            var ns = new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty });
+            var sb = new StringBuilder();
+
+            using (var writer = new StringWriter(sb))
+            {
+                serializer.Serialize(writer, filteredCategories, ns);
+            }
+
+            return sb.ToString().TrimEnd();
         }
     }
 }

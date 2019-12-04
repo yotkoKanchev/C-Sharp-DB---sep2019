@@ -50,10 +50,10 @@ namespace FastFood.App
 			Console.WriteLine(jsonOutput);
 			File.WriteAllText(exportDir + "OrdersByEmployee.json", jsonOutput);
 
-			//var xmlOutput = DataProcessor.Serializer.ExportCategoryStatistics(context, "Chicken,Drinks,Toys");
-			//Console.WriteLine(xmlOutput);
-			//File.WriteAllText(exportDir + "CategoryStatistics.xml", xmlOutput);
-		}
+            var xmlOutput = DataProcessor.Serializer.ExportCategoryStatistics(context, "Chicken,Drinks,Toys");
+            Console.WriteLine(xmlOutput);
+            File.WriteAllText(exportDir + "CategoryStatistics.xml", xmlOutput);
+        }
 
 		private static void BonusTask(FastFoodDbContext context)
 		{
