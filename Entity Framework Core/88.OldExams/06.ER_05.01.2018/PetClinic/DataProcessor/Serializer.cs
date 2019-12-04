@@ -2,9 +2,14 @@
 {
     using System;
     using System.Globalization;
+    using System.IO;
     using System.Linq;
+    using System.Text;
+    using System.Xml;
+    using System.Xml.Serialization;
     using Newtonsoft.Json;
     using PetClinic.Data;
+    using PetClinic.DataProcessor.ExportDtos;
 
     public class Serializer
     {
@@ -24,13 +29,39 @@
                 })
                 .ToList();
 
-            return JsonConvert.SerializeObject(animals, Formatting.Indented);
+            return JsonConvert.SerializeObject(animals, Newtonsoft.Json.Formatting.Indented);
         }
 
         public static string ExportAllProcedures(PetClinicContext context)
         {
-            return null;
+            var sb = new StringBuilder();
 
+            var procedures = context.Procedures
+                .OrderBy(p => p.DateTime)
+                .ThenBy(p => p.Animal.PassportSerialNumber)
+                .Select(p => new ExportProcedureDto
+                {
+                    OwnerNumber = p.Animal.Passport.OwnerPhoneNumber,
+                    Passport = p.Animal.PassportSerialNumber,
+                    DateTime = p.DateTime.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture),
+                    AnimalAids = p.ProcedureAnimalAids.Select(paa => new ExportAnimalAidDto
+                    {
+                        Name = paa.AnimalAid.Name,
+                        Price = paa.AnimalAid.Price
+                    }).ToArray(),
+                     TotalPrice = p.ProcedureAnimalAids.Sum(paa => paa.AnimalAid.Price)
+                })
+                .ToArray();
+
+            var serializer = new XmlSerializer(typeof(ExportProcedureDto[]), new XmlRootAttribute("Procedures"));
+            var ns = new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty });
+
+            using (var writer = new StringWriter(sb))
+            {
+                serializer.Serialize(writer, procedures, ns);
+            }
+
+            return sb.ToString().TrimEnd();
         }
     }
 }
