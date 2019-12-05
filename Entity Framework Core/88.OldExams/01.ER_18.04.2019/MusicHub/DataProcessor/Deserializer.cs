@@ -157,9 +157,11 @@
 
         public static string ImportSongPerformers(MusicHubDbContext context, string xmlString)
         {
-            var sb = new StringBuilder();
-            var validSongIds = context.Songs.Select(s => s.Id).ToList();
+             var performers = new List<Performer>();
+            var songs = context.Songs.ToList();
+            var songIds = songs.Select(s => s.Id).ToList();
 
+            var sb = new StringBuilder();
             var serializer = new XmlSerializer(typeof(ImportPerformerDto[]), new XmlRootAttribute("Performers"));
 
             ImportPerformerDto[] importPerformerDtos;
@@ -169,38 +171,32 @@
                 importPerformerDtos = (ImportPerformerDto[])serializer.Deserialize(reader);
             }
 
-            var performers = new List<Performer>();
-
-            foreach (var performerDto in importPerformerDtos)
+            foreach (var dto in importPerformerDtos)
             {
-                var firstNameIsValid = performerDto.FirstName.Length >= 3 && performerDto.FirstName.Length <= 30;
-                var lasstNameIsValid = performerDto.LastName.Length >= 3 && performerDto.LastName.Length <= 30;
-                var ageIsValid = performerDto.Age >= 17 && performerDto.Age <= 70;
-                var netWorthIsValid = performerDto.NetWorth >= 0;
-                var songIdsAreValid = performerDto.Songs.All(s => validSongIds.Contains(s.SongId));
+                var songsAreValid = dto.PerformersSongs.All(i => songIds.Contains(i.Id)) && 
+                                    dto.PerformersSongs.All(IsValid) ;
 
-                if (!firstNameIsValid || !lasstNameIsValid || !ageIsValid || !netWorthIsValid || !songIdsAreValid)
+                if (!IsValid(dto) || !songsAreValid)
                 {
                     sb.AppendLine(ErrorMessage);
                     continue;
                 }
 
-                sb.AppendLine(string.Format(SuccessfullyImportedPerformer, performerDto.FirstName, performerDto.Songs.Length));
-
-                var performer = Mapper.Map<Performer>(performerDto);
-
-                foreach (var songDto in performerDto.Songs)
+                var performer = new Performer
                 {
+                    FirstName = dto.FirstName,
+                    LastName = dto.LastName,
+                    Age = dto.Age,
+                    NetWorth = dto.NetWorth,
+                    PerformerSongs = dto.PerformersSongs
+                        .Select(ps => new SongPerformer
+                        {
+                            SongId = ps.Id
+                        })
+                        .ToArray()
+                };
 
-                    var songPerformer = new SongPerformer
-                    {
-                        Performer = performer,
-                        SongId = songDto.SongId,
-                    };
-                    performer.PerformerSongs.Add(songPerformer);
-                    //songPerformers.Add(songPerformer);
-                }
-
+                sb.AppendLine(string.Format(SuccessfullyImportedPerformer, performer.FirstName, performer.PerformerSongs.Count));
                 performers.Add(performer);
             }
 

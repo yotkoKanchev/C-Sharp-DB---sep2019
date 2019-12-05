@@ -1,23 +1,23 @@
 ﻿namespace MusicHub.DataProcessor.ImportDtos
 {
+    using System.ComponentModel.DataAnnotations;
     using System.Xml.Serialization;
 
     [XmlType("Performer")]
     public class ImportPerformerDto
     {
-        [XmlElement]
+        [MinLength(3), MaxLength(20), Required]
         public string FirstName { get; set; }
 
-        [XmlElement]
+        [MinLength(3), MaxLength(20), Required]
         public string LastName { get; set; }
 
-        [XmlElement]
+        [Range(18, 70)]
         public int Age { get; set; }
 
-        [XmlElement]
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal NetWorth { get; set; }
 
-        [XmlArray("PerformersSongs")]
-        public ImportSongIdDto[] Songs { get; set; }
+        public ImportSongIdDto[] PerformersSongs { get; set; }
     }
 }

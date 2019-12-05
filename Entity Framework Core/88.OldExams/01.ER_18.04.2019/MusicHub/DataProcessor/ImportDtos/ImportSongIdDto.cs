@@ -1,12 +1,13 @@
-﻿using System.Xml.Serialization;
-
-namespace MusicHub.DataProcessor.ImportDtos
+﻿namespace MusicHub.DataProcessor.ImportDtos
 {
+    using System.ComponentModel.DataAnnotations;
+    using System.Xml.Serialization;
+
     [XmlType("Song")]
     public class ImportSongIdDto
     {
         [XmlAttribute("id")]
-
-        public int SongId { get; set; }
+        [Range(0, int.MaxValue)]
+        public int Id { get; set; }
     }
 }
