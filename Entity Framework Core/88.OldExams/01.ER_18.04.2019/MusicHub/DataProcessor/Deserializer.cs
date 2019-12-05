@@ -108,11 +108,12 @@
 
         public static string ImportSongs(MusicHubDbContext context, string xmlString)
         {
+            var albumIds = context.Albums.Select(a => a.Id).ToList();
+            var writerIds = context.Writers.Select(w => w.Id).ToList();
+
+            var songs = new List<Song>();
+
             var sb = new StringBuilder();
-
-            var validWriterIds = context.Writers.Select(w => w.Id).ToList();
-            var validAlbumIds = context.Albums.Select(a => a.Id).ToList();
-
             var serializer = new XmlSerializer(typeof(ImportSongDto[]), new XmlRootAttribute("Songs"));
 
             ImportSongDto[] importSongDtos;
@@ -122,26 +123,30 @@
                 importSongDtos = (ImportSongDto[])serializer.Deserialize(reader);
             }
 
-            var songs = new List<Song>();
-
-            foreach (var songDto in importSongDtos)
+            foreach (var dto in importSongDtos)
             {
-                var nameIsValid = songDto.Name.Length >= 3 && songDto.Name.Length <= 20;
-                var priceIsValid = songDto.Price > 0;
-                var genreIsValid = Enum.IsDefined(typeof(Genre), songDto.Genre);
-                var writerIdIsValid = validWriterIds.Contains(songDto.WriterId);
-                var albumIdIsValid = songDto.AlbumId != null ? validAlbumIds.Contains(songDto.AlbumId.Value) : true;
+                var albumIdIsValid = albumIds.Contains(dto.AlbumId.Value) || dto.AlbumId == null;
+                var writerIdIsValid = writerIds.Contains(dto.WriterId);
+                var genreIsValid = Enum.IsDefined(typeof(Genre), dto.Genre);
 
-                if (!nameIsValid || !priceIsValid || !genreIsValid || !writerIdIsValid || !albumIdIsValid)
+                if (!IsValid(dto) || !albumIdIsValid || !writerIdIsValid || !genreIsValid)
                 {
                     sb.AppendLine(ErrorMessage);
                     continue;
                 }
 
-                var song = Mapper.Map<Song>(songDto);
+                var song = new Song
+                {
+                    Name = dto.Name,
+                    WriterId = dto.WriterId,
+                    AlbumId = dto.AlbumId,
+                    Genre = Enum.Parse<Genre>(dto.Genre),
+                    CreatedOn = DateTime.ParseExact(dto.CreatedOn, "dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    Duration = TimeSpan.ParseExact(dto.Duration, "c", CultureInfo.InvariantCulture),
+                };
 
+                sb.AppendLine(String.Format(SuccessfullyImportedSong, dto.Name, dto.Genre, dto.Duration));
                 songs.Add(song);
-                sb.AppendLine(string.Format(SuccessfullyImportedSong, song.Name, song.Genre.ToString(), song.Duration));
             }
 
             context.Songs.AddRange(songs);

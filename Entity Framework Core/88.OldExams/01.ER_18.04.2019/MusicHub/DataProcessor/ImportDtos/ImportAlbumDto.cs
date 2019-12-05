@@ -7,7 +7,7 @@
         [MinLength(3), MaxLength(40), Required]
         public string Name { get; set; }
       
-        [MinLength(6)]
+        [MinLength(10)]
         public string ReleaseDate { get; set; }
     }
 }

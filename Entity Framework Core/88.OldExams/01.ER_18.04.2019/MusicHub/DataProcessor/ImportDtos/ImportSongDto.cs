@@ -1,29 +1,27 @@
 ﻿namespace MusicHub.DataProcessor.ImportDtos
 {
+    using System.ComponentModel.DataAnnotations;
     using System.Xml.Serialization;
 
     [XmlType("Song")]
     public class ImportSongDto
     {
-        [XmlElement(ElementName = "Name")]
+        [MinLength(3), MaxLength(20), Required]
         public string Name { get; set; }
 
-        [XmlElement(ElementName = "Duration")]
+        [MinLength(8)]
         public string Duration { get; set; }
 
-        [XmlElement(ElementName = "CreatedOn")]
+        [MinLength(10)]
         public string CreatedOn { get; set; }
 
-        [XmlElement(ElementName = "Genre")]
+        [MinLength(3), Required]
         public string Genre { get; set; }
 
-        [XmlElement(ElementName = "AlbumId")]
+        [Range(0, int.MaxValue)]
         public int? AlbumId { get; set; }
 
-        [XmlElement(ElementName = "WriterId")]
+        [Range(0, int.MaxValue)]
         public int WriterId { get; set; }
-
-        [XmlElement(ElementName = "Price")]
-        public decimal Price { get; set; }
     }
 }
