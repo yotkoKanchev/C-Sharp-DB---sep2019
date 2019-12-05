@@ -1,14 +1,15 @@
 ﻿namespace MusicHub.DataProcessor
 {
-    using System;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Text;
-    //using System.Xml;
+    using System.Xml;
     using System.Xml.Serialization;
-    using AutoMapper;
+
     using Data;
-    using MusicHub.DataProcessor.ExportDtos;
+    using ExportDtos;
+
     using Newtonsoft.Json;
 
     public class Serializer
@@ -37,26 +38,36 @@
                 })
             .ToArray();
 
-            return JsonConvert.SerializeObject(albums, Formatting.Indented);
+            return JsonConvert.SerializeObject(albums, Newtonsoft.Json.Formatting.Indented);
         }
+
         public static string ExportSongsAboveDuration(MusicHubDbContext context, int duration)
         {
+            var sb = new StringBuilder();
+
             var songs = context.Songs
                 .Where(s => s.Duration.TotalSeconds > duration)
+                .Select(s => new ExportSongAboveDurationDto
+                {
+                    SongName = s.Name,
+                    Writer = s.Writer.Name,
+                    Performer = s.SongPerformers
+                        .Select(sp => $"{sp.Performer.FirstName} {sp.Performer.LastName}")
+                        .FirstOrDefault(),
+                    AlbumProducer = s.Album.Producer.Name,
+                    Duration = s.Duration.ToString("c", CultureInfo.InvariantCulture)
+                })
+                .OrderBy(s => s.SongName)
+                .ThenBy(s => s.Writer)
+                .ThenBy(s => s.Performer)
                 .ToArray();
 
-            var songDtos = Mapper.Map<ExportSongAboveDurationDto[]>(songs)
-                .OrderBy(sdt => sdt.SongName)
-                .ThenBy(sdt => sdt.Writer)
-                .ThenBy(sdt => sdt.Performer).ToArray();
-
             var serializer = new XmlSerializer(typeof(ExportSongAboveDurationDto[]), new XmlRootAttribute("Songs"));
-            var ns = new XmlSerializerNamespaces(new[] { System.Xml.XmlQualifiedName.Empty });
-            var sb = new StringBuilder();
+            var ns = new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty });
 
             using (var writer = new StringWriter(sb))
             {
-                serializer.Serialize(writer, songDtos, ns);
+                serializer.Serialize(writer, songs, ns);
             }
 
             return sb.ToString().TrimEnd();

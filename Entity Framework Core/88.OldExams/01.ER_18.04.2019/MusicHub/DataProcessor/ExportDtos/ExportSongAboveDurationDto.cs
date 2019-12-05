@@ -1,6 +1,5 @@
 ﻿namespace MusicHub.DataProcessor.ExportDtos
 {
-    using System;
     using System.Xml.Serialization;
 
     [XmlType("Song")]
