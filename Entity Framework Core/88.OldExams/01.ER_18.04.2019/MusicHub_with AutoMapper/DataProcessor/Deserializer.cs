@@ -35,22 +35,27 @@
         {
             var sb = new StringBuilder();
             var importWriterDtos = JsonConvert.DeserializeObject<ImportWriterDto[]>(jsonString);
-            var writers = Mapper.Map<Writer[]>(importWriterDtos);
-            var validWriters = new List<Writer>();
 
-            foreach (var writer in writers)
+            var writers = new List<Writer>();
+
+            foreach (var writerDto in importWriterDtos)
             {
-                if (!IsValid(writer) == true)
+                if (!IsValid(writerDto))
                 {
                     sb.AppendLine(ErrorMessage);
                     continue;
                 }
 
-                validWriters.Add(writer);
-                sb.AppendLine(string.Format(SuccessfullyImportedWriter, writer.Name));
+                sb.AppendLine(String.Format(SuccessfullyImportedWriter, writerDto.Name));
+
+                writers.Add(new Writer
+                {
+                    Name = writerDto.Name,
+                    Pseudonym = writerDto.Pseudonym,
+                });
             }
 
-            context.Writers.AddRange(validWriters);
+            context.Writers.AddRange(writers);
             context.SaveChanges();
 
             return sb.ToString().TrimEnd();
