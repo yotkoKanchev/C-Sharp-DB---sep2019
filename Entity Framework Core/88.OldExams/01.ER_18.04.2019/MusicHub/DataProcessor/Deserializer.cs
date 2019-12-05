@@ -64,39 +64,38 @@
         public static string ImportProducersAlbums(MusicHubDbContext context, string jsonString)
         {
             var sb = new StringBuilder();
-
-            var importProducersDtos = JsonConvert.DeserializeObject<ImportProducerDto[]>(jsonString);
+            var importProducerDtos = JsonConvert.DeserializeObject<ImportProducerDto[]>(jsonString);
 
             var producers = new List<Producer>();
 
-            foreach (var producerDto in importProducersDtos)
+            foreach (var producerDto in importProducerDtos)
             {
-                var producer = Mapper.Map<Producer>(producerDto);
-
-                var producerIsValid = IsValid(producer);
-                var albumsAreValid = producerDto.ProducerAlbums.All(a => IsValid(a));
-
-                if (!producerIsValid || !albumsAreValid)
+                if (!IsValid(producerDto) || !producerDto.Albums.All(IsValid))
                 {
                     sb.AppendLine(ErrorMessage);
                     continue;
                 }
 
-                if (producerDto.PhoneNumber == null)
+                var producer = new Producer
                 {
-                    sb.AppendLine(String.Format(SuccessfullyImportedProducerWithNoPhone,
-                                                    producerDto.Name,
-                                                    producerDto.ProducerAlbums.Count));
+                    Name = producerDto.Name,
+                    PhoneNumber = producerDto.PhoneNumber,
+                    Pseudonym = producerDto.Pseudonym,
+                    Albums = producerDto.Albums.Select(a => new Album
+                    {
+                        Name = a.Name,
+                        ReleaseDate = DateTime.ParseExact(a.ReleaseDate, "dd/MM/yyyy", CultureInfo.InvariantCulture)
+                    }).ToArray()
+                };
+
+                if (producer.PhoneNumber == null)
+                {
+                    sb.AppendLine(String.Format(SuccessfullyImportedProducerWithNoPhone, producerDto.Name, producerDto.Albums.Length));
                 }
                 else
                 {
-                    sb.AppendLine(String.Format(SuccessfullyImportedProducerWithPhone,
-                                                    producerDto.Name, producerDto.PhoneNumber,
-                                                    producerDto.ProducerAlbums.Count));
+                    sb.AppendLine(String.Format(SuccessfullyImportedProducerWithPhone, producerDto.Name, producerDto.PhoneNumber, producerDto.Albums.Length));
                 }
-
-                var albums = Mapper.Map<List<Album>>(producerDto.ProducerAlbums);
-                albums.ForEach(a => producer.Albums.Add(a));
 
                 producers.Add(producer);
             }

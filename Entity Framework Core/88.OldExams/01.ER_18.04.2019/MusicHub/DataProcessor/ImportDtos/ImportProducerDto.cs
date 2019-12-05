@@ -1,20 +1,18 @@
 ﻿namespace MusicHub.DataProcessor.ImportDtos
 {
-    using Newtonsoft.Json;
-    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
 
     public class ImportProducerDto
     {
-        [JsonProperty("Name")]
+        [MinLength(3), MaxLength(30), Required]
         public string Name { get; set; }
 
-        [JsonProperty("Pseudonym")]
+        [RegularExpression(@"^[A-Z]{1}[a-z]+ [A-Z]{1}[a-z]+$")]
         public string Pseudonym { get; set; }
 
-        [JsonProperty("PhoneNumber")]
+        [RegularExpression(@"^\+359 \d{3} \d{3} \d{3}$")]
         public string PhoneNumber { get; set; }
 
-        [JsonProperty("Albums")]
-        public ICollection<ImportAlbumDto> ProducerAlbums { get; set; }
+        public ImportAlbumDto[] Albums { get; set; }
     }
 }
