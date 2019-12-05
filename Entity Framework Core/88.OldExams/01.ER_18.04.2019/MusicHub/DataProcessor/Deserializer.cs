@@ -108,7 +108,7 @@
 
         public static string ImportSongs(MusicHubDbContext context, string xmlString)
         {
-            var albumIds = context.Albums.Select(a => a.Id).ToList();
+             var albumIds = context.Albums.Select(a => a.Id).ToList();
             var writerIds = context.Writers.Select(w => w.Id).ToList();
 
             var songs = new List<Song>();
@@ -143,6 +143,7 @@
                     Genre = Enum.Parse<Genre>(dto.Genre),
                     CreatedOn = DateTime.ParseExact(dto.CreatedOn, "dd/MM/yyyy", CultureInfo.InvariantCulture),
                     Duration = TimeSpan.ParseExact(dto.Duration, "c", CultureInfo.InvariantCulture),
+                    Price = dto.Price
                 };
 
                 sb.AppendLine(String.Format(SuccessfullyImportedSong, dto.Name, dto.Genre, dto.Duration));
