@@ -18,14 +18,26 @@
             var albums = context.Albums
                 .Where(a => a.ProducerId == producerId)
                 .OrderByDescending(a => a.Price)
-                .ToList();
+                .Select(a => new
+                {
+                    AlbumName = a.Name,
+                    ReleaseDate = a.ReleaseDate.ToString(@"MM/dd/yyyy", CultureInfo.InvariantCulture),
+                    ProducerName = a.Producer.Name,
+                    Songs = a.Songs
+                    .Select(s => new
+                    {
+                        SongName = s.Name,
+                        Price = s.Price.ToString("F2"),
+                        Writer = s.Writer.Name
+                    })
+                    .OrderByDescending(s => s.SongName)
+                    .ThenBy(s => s.Writer)
+                    .ToArray(),
+                    AlbumPrice = a.Price.ToString("F2")
+                })
+            .ToArray();
 
-            var exportAlbumDtos = Mapper.Map<ExportAlbumDto[]>(albums)
-                .ToArray();
-
-            return JsonConvert.SerializeObject(exportAlbumDtos,
-                                               Formatting.Indented,
-                                               new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            return JsonConvert.SerializeObject(albums, Formatting.Indented);
         }
         public static string ExportSongsAboveDuration(MusicHubDbContext context, int duration)
         {
