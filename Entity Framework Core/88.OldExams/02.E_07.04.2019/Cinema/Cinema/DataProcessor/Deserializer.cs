@@ -171,34 +171,51 @@
 
         public static string ImportCustomerTickets(CinemaContext context, string xmlString)
         {
-            var sb = new StringBuilder();
-            var serializer = new XmlSerializer(typeof(ImportCustomerTicketDto[]), new XmlRootAttribute("Customers"));
+             var sb = new StringBuilder();
+            var customers = new List<Customer>();
 
-            ImportCustomerTicketDto[] importCustomerTicketDtos;
+            var serializer = new XmlSerializer(typeof(ImportCustomerDto[]), new XmlRootAttribute("Customers"));
+
+            ImportCustomerDto[] importCustomerDtos;
 
             using (var reader = new StringReader(xmlString))
             {
-                importCustomerTicketDtos = (ImportCustomerTicketDto[])serializer.Deserialize(reader);
+                importCustomerDtos = (ImportCustomerDto[])serializer.Deserialize(reader);
             }
 
-            var customers = new List<Customer>();
-
-            foreach (var customerDto in importCustomerTicketDtos)
+            foreach (var dto in importCustomerDtos)
             {
-                var customer = Mapper.Map<Customer>(customerDto);
 
-                if (!IsValid(customer))
+                if (!IsValid(dto))
                 {
                     sb.AppendLine(ErrorMessage);
                     continue;
                 }
 
-                sb.AppendLine(string.Format(SuccessfulImportCustomerTicket, customer.FirstName, customer.LastName, customer.Tickets.Count));
+                var customer = new Customer
+                {
+                    FirstName = dto.FirstName,
+                    LastName = dto.LastName,
+                    Age = dto.Age,
+                    Balance = dto.Balance,
+                    Tickets = dto.Tickets
+                        .Select(t => new Ticket
+                        {
+                            ProjectionId = t.ProjectionId,
+                            Price = t.Price,
+                        })
+                        .ToArray()
+                };
+
+                sb.AppendLine(String.Format(
+                    SuccessfulImportCustomerTicket, customer.FirstName, customer.LastName, customer.Tickets.Count));
+
                 customers.Add(customer);
             }
 
             context.Customers.AddRange(customers);
             context.SaveChanges();
+
             return sb.ToString().TrimEnd();
         }
 
