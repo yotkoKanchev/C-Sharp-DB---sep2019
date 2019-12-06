@@ -127,9 +127,10 @@
 
         public static string ImportProjections(CinemaContext context, string xmlString)
         {
-            var sb = new StringBuilder();
-            var validHallIds = context.Halls.Select(h => h.Id).ToList();
-            var validMovieIds = context.Movies.Select(h => h.Id).ToList();
+           var sb = new StringBuilder();
+            var projections = new List<Projection>();
+            var movieIds = context.Movies.Select(m => m.Id).ToList();
+            var hallIds = context.Halls.Select(m => m.Id).ToList();
 
             var serializer = new XmlSerializer(typeof(ImportProjectionDto[]), new XmlRootAttribute("Projections"));
 
@@ -140,30 +141,31 @@
                 importProjectionDtos = (ImportProjectionDto[])serializer.Deserialize(reader);
             }
 
-            var projections = new List<Projection>();
-
-            foreach (var projectionDto in importProjectionDtos)
+            foreach (var dto in importProjectionDtos)
             {
-                var movieIdIsValid = validMovieIds.Contains(projectionDto.MovieId);
-                var hallIdIsValid = validHallIds.Contains(projectionDto.HallId);
+                var hallIsValid = hallIds.Contains(dto.HallId);
+                var movieIsValid = movieIds.Contains(dto.MovieId);
 
-                if (!movieIdIsValid || !hallIdIsValid)
+                if (!IsValid(dto) || !hallIsValid || !movieIsValid)
                 {
                     sb.AppendLine(ErrorMessage);
                     continue;
                 }
 
-                var projection = Mapper.Map<Projection>(projectionDto);
+                var projection = new Projection
+                {
+                    Movie = context.Movies.Find(dto.MovieId),
+                    Hall = context.Halls.Find(dto.HallId),
+                    DateTime = DateTime.ParseExact(dto.DateTime, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
+                };
 
-                var movieTitle = context.Movies.Find(projection.MovieId).Title;
-                var projectionTime = projection.DateTime.ToString("MM/dd/yyyy");
-
-                sb.AppendLine(string.Format(SuccessfulImportProjection, movieTitle, projectionTime));
+                sb.AppendLine(String.Format(SuccessfulImportProjection, projection.Movie.Title, projection.DateTime.ToString("MM/dd/yyyy")));
                 projections.Add(projection);
             }
 
             context.Projections.AddRange(projections);
             context.SaveChanges();
+
             return sb.ToString().TrimEnd();
         }
 
