@@ -1,21 +1,23 @@
 ﻿namespace Cinema.DataProcessor
 {
+    using System;
     using System.Linq;
-    using Data;
-    using Cinema.DataProcessor.ExportDto;
-    using Newtonsoft.Json;
-    using AutoMapper;
-    using System.Text;
-    using System.Xml.Serialization;
-
+    using System.Globalization;
     using System.IO;
-    using AutoMapper.QueryableExtensions;
+    using System.Text;
+    using System.Xml;
+    using System.Xml.Serialization;
+    
+    using Newtonsoft.Json;
+
+    using ExportDto;
+    using Data;
 
     public class Serializer
     {
         public static string ExportTopMovies(CinemaContext context, int rating)
         {
-             var movies = context.Movies
+            var movies = context.Movies
                 .Where(m => m.Rating >= rating)
                 .Where(m => m.Projections.Any(p => p.Tickets.Any()))
                 .Take(10)
@@ -46,17 +48,25 @@
 
         public static string ExportTopCustomers(CinemaContext context, int age)
         {
-            var sb = new StringBuilder();
-
             var customers = context.Customers
                 .Where(c => c.Age >= age)
                 .OrderByDescending(c => c.Tickets.Sum(t => t.Price))
                 .Take(10)
-                .ProjectTo<ExportTopCustomerDto>()
+                .Select(c => new ExportCustomerDto
+                {
+                    FirstName = c.FirstName,
+                    LastName = c.LastName,
+                    SpentMoney = c.Tickets.Sum(t => t.Price).ToString("F2"),
+                    SpentTime = TimeSpan.FromMilliseconds(c.Tickets
+                        .Sum(t => t.Projection.Movie.Duration.TotalMilliseconds))
+                        .ToString("c", CultureInfo.InvariantCulture),
+                })
                 .ToArray();
 
-            var serializer = new XmlSerializer(typeof(ExportTopCustomerDto[]), new XmlRootAttribute("Customers"));
-            var ns = new XmlSerializerNamespaces(new[] { System.Xml.XmlQualifiedName.Empty });
+
+            var sb = new StringBuilder();
+            var serializer = new XmlSerializer(typeof(ExportCustomerDto[]), new XmlRootAttribute("Customers"));
+            var ns = new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty });
 
             using (var writer = new StringWriter(sb))
             {
