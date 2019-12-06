@@ -5,7 +5,6 @@
 
     public class Hall
     {
-        [Key]
         public int Id { get; set; }
 
         [MinLength(3), MaxLength(20), Required]
