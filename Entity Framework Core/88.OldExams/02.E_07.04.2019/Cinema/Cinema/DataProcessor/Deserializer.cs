@@ -65,61 +65,56 @@
             context.Movies.AddRange(movies);
             context.SaveChanges();
 
-            // return sb.ToString().TrimEnd();
-            // return sb.ToString().TrimEnd();
+            return sb.ToString().TrimEnd();
         }
 
         public static string ImportHallSeats(CinemaContext context, string jsonString)
         {
-            var sb = new StringBuilder();
-            var importHallDtos = JsonConvert.DeserializeObject<ImportHallDto[]>(jsonString);
+             var sb = new StringBuilder();
+            var hallDtos = JsonConvert.DeserializeObject<ImportHallDto[]>(jsonString);
+
             var halls = new List<Hall>();
 
-            foreach (var hallDto in importHallDtos)
+            foreach (var dto in hallDtos)
             {
-                var seatCountIsValid = hallDto.SeatsCount > 0;
+                var seatCountIsValid = dto.Seats > 0;
 
-                if (!seatCountIsValid)
+                if (!IsValid(dto) || !seatCountIsValid)
                 {
                     sb.AppendLine(ErrorMessage);
                     continue;
                 }
 
-                var hall = Mapper.Map<Hall>(hallDto);
+                var seats = new List<Seat>();
 
-                var hallIsValid = IsValid(hall);
 
-                if (!hallIsValid)
+                var hall = new Hall
                 {
-                    sb.AppendLine(ErrorMessage);
-                    continue;
+                    Name = dto.Name,
+                    Is3D = dto.Is3D,
+                    Is4Dx = dto.Is4Dx,
+                };
+
+                for (int i = 0; i < dto.Seats; i++)
+                {
+                    hall.Seats.Add(new Seat { Hall = hall });
                 }
 
-                var projectionType = "Normal";
-
-                if (hall.Is3D == true && hall.Is4Dx == true)
+                var projection = "Normal";
+                if (dto.Is3D == true && dto.Is4Dx == true)
                 {
-                    projectionType = "4Dx/3D";
+                    projection = "4Dx/3D";
                 }
-                else if (hall.Is3D == true && hall.Is4Dx == false)
+                else if (dto.Is3D == true && dto.Is4Dx == false)
                 {
-                    projectionType = "3D";
+                    projection = "3D";
                 }
-                else if (hall.Is3D == false && hall.Is4Dx == true)
+                else if (dto.Is3D == false && dto.Is4Dx == true)
                 {
-                    projectionType = "4Dx";
+                    projection = "4Dx";
                 }
 
-                sb.AppendLine(string.Format(SuccessfulImportHallSeat, hall.Name, projectionType, hallDto.SeatsCount));
-
-                for (int i = 0; i < hallDto.SeatsCount; i++)
-                {
-                    hall.Seats.Add(new Seat
-                    {
-                        Hall = hall
-                    });
-
-                }
+                sb.AppendLine(String.Format(SuccessfulImportHallSeat, hall.Name, projection, hall.Seats.Count));
 
                 halls.Add(hall);
             }
