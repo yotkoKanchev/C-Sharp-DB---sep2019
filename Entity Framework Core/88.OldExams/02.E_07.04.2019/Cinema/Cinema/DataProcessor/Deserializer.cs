@@ -35,33 +35,38 @@
 
             foreach (var movieDto in importMovieDtos)
             {
-                var genreIsValid = Enum.IsDefined(typeof(Genre), movieDto.Genre);
-                var titleIsNotValid = movies.Any(m => m.Title == movieDto.Title);
+               var sb = new StringBuilder();
+            var movieDtos = JsonConvert.DeserializeObject<ImportMovieDto[]>(jsonString);
+            var movies = new List<Movie>();
 
-                if (!genreIsValid || titleIsNotValid)
+            foreach (var dto in movieDtos)
+            {
+                var genreIsValid = Enum.IsDefined(typeof(Genre), dto.Genre);
+
+                if (!IsValid(dto) || !genreIsValid)
                 {
                     sb.AppendLine(ErrorMessage);
                     continue;
                 }
 
-                var movie = Mapper.Map<Movie>(movieDto);
-
-                var movieIsValid = IsValid(movie);
-
-                if (!movieIsValid)
+                var movie = new Movie
                 {
-                    sb.AppendLine(ErrorMessage);
-                    continue;
-                }
+                    Title = dto.Title,
+                    Director = dto.Director,
+                    Genre = Enum.Parse<Genre>(dto.Genre),
+                    Duration = TimeSpan.ParseExact(dto.Duration, "c", CultureInfo.InvariantCulture),
+                    Rating = dto.Rating,
+                };
 
-                sb.AppendLine(String.Format(SuccessfulImportMovie, movie.Title, movie.Genre, movie.Rating.ToString("f2")));
+                sb.AppendLine(String.Format(SuccessfulImportMovie, movie.Title, movie.Genre.ToString(), movie.Rating.ToString("F2")));
                 movies.Add(movie);
             }
 
             context.Movies.AddRange(movies);
             context.SaveChanges();
 
-            return sb.ToString().TrimEnd();
+            // return sb.ToString().TrimEnd();
+            // return sb.ToString().TrimEnd();
         }
 
         public static string ImportHallSeats(CinemaContext context, string jsonString)
