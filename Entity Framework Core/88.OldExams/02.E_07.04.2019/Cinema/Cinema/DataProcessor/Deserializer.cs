@@ -1,19 +1,20 @@
 ﻿namespace Cinema.DataProcessor
 {
     using System;
+    using System.Linq;
     using System.Collections.Generic;
-    using ImportDto;
+    using System.IO;
+    using System.Globalization;
+    using System.Text;
+    using System.ComponentModel.DataAnnotations;
+    using System.Xml.Serialization;
+    
+    using Newtonsoft.Json;
+
     using Data;
     using Data.Models;
-    using Newtonsoft.Json;
-    using ValidationContext = System.ComponentModel.DataAnnotations.ValidationContext;
-    using System.ComponentModel.DataAnnotations;
-    using System.Text;
-    using AutoMapper;
-    using System.Linq;
-    using Cinema.Data.Models.Enums;
-    using System.Xml.Serialization;
-    using System.IO;
+    using Data.Models.Enums;
+    using DataProcessor.ImportDto;
 
     public class Deserializer
     {
@@ -30,12 +31,6 @@
         public static string ImportMovies(CinemaContext context, string jsonString)
         {
             var sb = new StringBuilder();
-            var importMovieDtos = JsonConvert.DeserializeObject<ImportMovieDto[]>(jsonString);
-            var movies = new List<Movie>();
-
-            foreach (var movieDto in importMovieDtos)
-            {
-               var sb = new StringBuilder();
             var movieDtos = JsonConvert.DeserializeObject<ImportMovieDto[]>(jsonString);
             var movies = new List<Movie>();
 
@@ -70,7 +65,7 @@
 
         public static string ImportHallSeats(CinemaContext context, string jsonString)
         {
-             var sb = new StringBuilder();
+            var sb = new StringBuilder();
             var hallDtos = JsonConvert.DeserializeObject<ImportHallDto[]>(jsonString);
 
             var halls = new List<Hall>();
@@ -127,7 +122,7 @@
 
         public static string ImportProjections(CinemaContext context, string xmlString)
         {
-           var sb = new StringBuilder();
+            var sb = new StringBuilder();
             var projections = new List<Projection>();
             var movieIds = context.Movies.Select(m => m.Id).ToList();
             var hallIds = context.Halls.Select(m => m.Id).ToList();
@@ -171,7 +166,7 @@
 
         public static string ImportCustomerTickets(CinemaContext context, string xmlString)
         {
-             var sb = new StringBuilder();
+            var sb = new StringBuilder();
             var customers = new List<Customer>();
 
             var serializer = new XmlSerializer(typeof(ImportCustomerDto[]), new XmlRootAttribute("Customers"));
@@ -219,12 +214,12 @@
             return sb.ToString().TrimEnd();
         }
 
-        private static bool IsValid(object obj)
+        private static bool IsValid(object dto)
         {
-            var validationContext = new ValidationContext(obj);
-            var validationResults = new List<ValidationResult>();
+            var validationContext = new ValidationContext(dto);
+            var validationResult = new List<ValidationResult>();
 
-            return Validator.TryValidateObject(obj, validationContext, validationResults, true);
+            return Validator.TryValidateObject(dto, validationContext, validationResult, true);
         }
     }
 }
