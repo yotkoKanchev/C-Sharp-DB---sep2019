@@ -15,40 +15,33 @@
     {
         public static string ExportTopMovies(CinemaContext context, int rating)
         {
-            //var movies = context.Movies     USING AUTOMAPPER RETURNS THE RIGHT RESULT BUT JUDGE FINDS DIFFERENCE ON 87TH ROW :(
-            //   .Where(m => m.Rating >= rating && m.Projections.Any(p => p.Tickets.Any()))
-            //   .Take(10)
-            //   .OrderByDescending(m => m.Rating)
-            //   .ThenByDescending(m => m.Projections.Sum(p => p.Tickets.Sum(t => t.Price)))
-            //   .ProjectTo<ExportMovieDto>()
-            //   .ToList();
-
-            var movies = context.Movies
-                    .Where(m => m.Rating >= rating && m.Projections.Any(p => p.Tickets.Count() >= 1))
-                    .Take(10)
-                    .OrderByDescending(m => m.Rating)
-                    .ThenByDescending(m => m.Projections.Sum(p => p.Tickets.Sum(t => t.Price)))
-                    .Select(m => new ExportMovieDto
-                    {
-                        MovieName = m.Title,
-                        Rating = m.Rating.ToString("F2"),
-                        TotalIncomes = m.Projections.Sum(p => p.Tickets.Sum(t => t.Price)).ToString("F2"),
-                        Customers = m.Projections
+             var movies = context.Movies
+                .Where(m => m.Rating >= rating)
+                .Where(m => m.Projections.Any(p => p.Tickets.Any()))
+                .Take(10)
+                .OrderByDescending(m => m.Rating)
+                .ThenByDescending(m => m.Projections.Sum(p => p.Tickets.Sum(t => t.Price)))
+                .Select(m => new
+                {
+                    MovieName = m.Title,
+                    Rating = m.Rating.ToString("F2"),
+                    TotalIncomes = m.Projections.Sum(p => p.Tickets.Sum(t => t.Price)).ToString("F2"),
+                    Customers = m.Projections
                         .SelectMany(p => p.Tickets)
-                        .Select(t => new ExportCustomerDto
+                        .Select(t => new
                         {
                             FirstName = t.Customer.FirstName,
                             LastName = t.Customer.LastName,
-                            Balance = t.Customer.Balance.ToString("F2")
+                            Balance = t.Customer.Balance.ToString("F2"),
                         })
                         .OrderByDescending(c => c.Balance)
                         .ThenBy(c => c.FirstName)
                         .ThenBy(c => c.LastName)
-                        .ToList()
-                    })
-                    .ToList();
+                        .ToArray()
+                })
+                .ToArray();
 
-            return JsonConvert.SerializeObject(movies, Formatting.Indented);
+            return JsonConvert.SerializeObject(movies, Newtonsoft.Json.Formatting.Indented);
         }
 
         public static string ExportTopCustomers(CinemaContext context, int age)
