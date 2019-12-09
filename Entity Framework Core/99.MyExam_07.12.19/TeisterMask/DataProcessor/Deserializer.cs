@@ -44,25 +44,17 @@
 
             foreach (var importProjectDto in importProjectDtos)
             {
-                if (!IsValid(importProjectDto) ||
-                    importProjectDto.OpenDate == string.Empty || // TODO may don't need that one !
-                    string.IsNullOrEmpty(importProjectDto.OpenDate) ||
-                    string.IsNullOrWhiteSpace(importProjectDto.OpenDate))
+                if (!IsValid(importProjectDto) || string.IsNullOrEmpty(importProjectDto.OpenDate))
                 {
                     stringBuilder.AppendLine(ErrorMessage);
                     continue;
                 }
 
-                DateTime? dueDate;
+                DateTime? dueDate = null;
 
-                if (!string.IsNullOrWhiteSpace(importProjectDto.DueDate) &&
-                    !string.IsNullOrEmpty(importProjectDto.DueDate))
+                if (!string.IsNullOrEmpty(importProjectDto.DueDate))
                 {
                     dueDate = DateTime.ParseExact(importProjectDto.DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-                }
-                else 
-                {
-                    dueDate = null; // TODO may not need it !!!
                 }
 
                 var project = new Project
@@ -76,22 +68,14 @@
                 {
                     var taskIsValid = IsValid(taskDto);
 
-                    // TODO may not need all validations here
-                    var openDateIsValid = !string.IsNullOrWhiteSpace(taskDto.OpenDate) &&
-                        !string.IsNullOrEmpty(taskDto.OpenDate) &&
+                    var openDateIsValid = !string.IsNullOrEmpty(taskDto.OpenDate) &&
                         DateTime.ParseExact(taskDto.OpenDate, "dd/MM/yyyy", CultureInfo.InvariantCulture) > project.OpenDate;
 
-                    // TODO may not need all validations here
-                    var dueDateIsValid = (!string.IsNullOrWhiteSpace(taskDto.DueDate) &&
-                        !string.IsNullOrEmpty(taskDto.DueDate) &&
+                    var dueDateIsValid = (!string.IsNullOrEmpty(taskDto.DueDate) &&
                         DateTime.ParseExact(taskDto.DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture) < project.DueDate) ||
                         project.DueDate == null;
 
-                    // TODO try without these two validations
-                    var executionTypeIsValid = Enum.IsDefined(typeof(ExecutionType), taskDto.ExecutionType);
-                    var labelTypeIsValid = Enum.IsDefined(typeof(LabelType), taskDto.LabelType);
-
-                    if (!taskIsValid || !openDateIsValid || !dueDateIsValid || executionTypeIsValid || labelTypeIsValid)
+                    if (!taskIsValid || !openDateIsValid || !dueDateIsValid)
                     {
                         stringBuilder.AppendLine(ErrorMessage);
                         continue;
