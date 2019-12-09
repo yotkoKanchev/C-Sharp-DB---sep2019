@@ -2,19 +2,19 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.IO;
-    using System.Text;
-    using System.Globalization;
     using System.ComponentModel.DataAnnotations;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
     using System.Xml.Serialization;
-
-    using Newtonsoft.Json;
 
     using Data;
     using Data.Models;
     using Data.Models.Enums;
-    using ImportDto;
+    using DataProcessor.ImportDto;
+
+    using Newtonsoft.Json;
 
     using ValidationContext = System.ComponentModel.DataAnnotations.ValidationContext;
 
@@ -44,12 +44,10 @@
 
             foreach (var importProjectDto in importProjectDtos)
             {
-                var projectIsValid = IsValid(importProjectDto);
-
                 if (!IsValid(importProjectDto) ||
-                    importProjectDto.OpenDate == "" ||
-                    String.IsNullOrEmpty(importProjectDto.OpenDate) ||
-                    String.IsNullOrWhiteSpace(importProjectDto.OpenDate))
+                    importProjectDto.OpenDate == string.Empty || // TODO may don't need that one !
+                    string.IsNullOrEmpty(importProjectDto.OpenDate) ||
+                    string.IsNullOrWhiteSpace(importProjectDto.OpenDate))
                 {
                     stringBuilder.AppendLine(ErrorMessage);
                     continue;
@@ -62,9 +60,9 @@
                 {
                     dueDate = DateTime.ParseExact(importProjectDto.DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
                 }
-                else //TODO may not need it !!!
+                else 
                 {
-                    dueDate = null;
+                    dueDate = null; // TODO may not need it !!!
                 }
 
                 var project = new Project
@@ -78,18 +76,18 @@
                 {
                     var taskIsValid = IsValid(taskDto);
 
-                    //TODO may not need all validations here
+                    // TODO may not need all validations here
                     var openDateIsValid = !string.IsNullOrWhiteSpace(taskDto.OpenDate) &&
                         !string.IsNullOrEmpty(taskDto.OpenDate) &&
                         DateTime.ParseExact(taskDto.OpenDate, "dd/MM/yyyy", CultureInfo.InvariantCulture) > project.OpenDate;
 
-                    //TODO may not need all validations here
-                    var dueDateIsValid = !string.IsNullOrWhiteSpace(taskDto.DueDate) &&
+                    // TODO may not need all validations here
+                    var dueDateIsValid = (!string.IsNullOrWhiteSpace(taskDto.DueDate) &&
                         !string.IsNullOrEmpty(taskDto.DueDate) &&
-                        DateTime.ParseExact(taskDto.DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture) < project.DueDate ||
+                        DateTime.ParseExact(taskDto.DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture) < project.DueDate) ||
                         project.DueDate == null;
 
-                    //TODO try without these two validations
+                    // TODO try without these two validations
                     var executionTypeIsValid = Enum.IsDefined(typeof(ExecutionType), taskDto.ExecutionType);
                     var labelTypeIsValid = Enum.IsDefined(typeof(LabelType), taskDto.LabelType);
 
@@ -111,7 +109,7 @@
 
                 projects.Add(project);
 
-                stringBuilder.AppendLine(String.Format(SuccessfullyImportedProject, project.Name, project.Tasks.Count));
+                stringBuilder.AppendLine(string.Format(SuccessfullyImportedProject, project.Name, project.Tasks.Count));
                 projects.Add(project);
             }
 
@@ -147,7 +145,6 @@
                     Phone = employeesDto.Phone,
                 };
 
-
                 foreach (var taskId in currentTasks)
                 {
                     if (!validTaskIds.Contains(taskId))
@@ -162,7 +159,7 @@
                     });
                 }
 
-                sitringBuilder.AppendLine(String.Format(SuccessfullyImportedEmployee, employee.Username, employee.EmployeesTasks.Count));
+                sitringBuilder.AppendLine(string.Format(SuccessfullyImportedEmployee, employee.Username, employee.EmployeesTasks.Count));
                 employees.Add(employee);
             }
 

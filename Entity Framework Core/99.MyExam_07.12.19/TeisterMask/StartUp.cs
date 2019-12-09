@@ -3,9 +3,10 @@
     using System;
     using System.Globalization;
     using System.IO;
-    using Microsoft.EntityFrameworkCore;
 
     using Data;
+
+    using Microsoft.EntityFrameworkCore;
 
     public class StartUp
     {
@@ -30,14 +31,12 @@
         private static void ImportEntities(TeisterMaskContext context, string baseDir, string exportDir)
         {
             var projects =
-                DataProcessor.Deserializer.ImportProjects(context,
-                    File.ReadAllText(baseDir + "projects.xml"));
+                DataProcessor.Deserializer.ImportProjects(context, File.ReadAllText(baseDir + "projects.xml"));
 
             PrintAndExportEntityToFile(projects, exportDir + "Actual Result - ImportProjects.txt");
 
             var employees =
-             DataProcessor.Deserializer.ImportEmployees(context,
-                 File.ReadAllText(baseDir + "employees.json"));
+             DataProcessor.Deserializer.ImportEmployees(context, File.ReadAllText(baseDir + "employees.json"));
 
             PrintAndExportEntityToFile(employees, exportDir + "Actual Result - ImportEmployees.txt");
         }

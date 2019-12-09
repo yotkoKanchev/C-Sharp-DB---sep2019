@@ -1,17 +1,17 @@
 ﻿namespace TeisterMask.DataProcessor
 {
     using System;
-    using System.Linq;
-    using System.IO;
-    using System.Text;
     using System.Globalization;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
     using System.Xml;
     using System.Xml.Serialization;
 
-    using Newtonsoft.Json; 
-
+    using Data;
     using ExportDto;
-    using Data;            
+
+    using Newtonsoft.Json;
 
     public class Serializer
     {
@@ -53,7 +53,7 @@
         {
             var employeeDtos = context.Employees
                 .Where(e => e.EmployeesTasks.Any(et => et.Task.OpenDate >= date))
-                .OrderByDescending(e => e.EmployeesTasks.Count(et =>et.Task.OpenDate >= date))
+                .OrderByDescending(e => e.EmployeesTasks.Count(et => et.Task.OpenDate >= date))
                 .ThenBy(e => e.Username)
                 .Take(10)
                 .Select(e => new ExportEmployeeDto
@@ -71,7 +71,7 @@
                             OpenDate = et.Task.OpenDate.ToString("d", CultureInfo.InvariantCulture),
                             DueDate = et.Task.DueDate.ToString("d", CultureInfo.InvariantCulture),
                         })
-                        
+
                         .ToArray()
                 })
                 .ToArray();
